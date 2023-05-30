@@ -3,7 +3,8 @@ module loyaltychain::lyt {
   use sui::coin::{Self, Coin, TreasuryCap};
   use sui::transfer;
 
-  use std::option::{Self};
+  use std::option::{Self, Option};
+  use sui::url::{Url};
 
   struct LYT has drop {}
 
@@ -11,8 +12,14 @@ module loyaltychain::lyt {
     create_coin(withness, ctx);
   }
 
+  // icon can be updated later with update_icon_url
   public fun create_coin(withness: LYT, ctx: &mut TxContext){
-    let (treasury_cap, meta_data) = coin::create_currency<LYT>(withness, 7, b"LYT", b"", b"", option::none(), ctx);
+    let decimal = 7;
+    let symbol = b"LYT";
+    let name = b"LYT";
+    let description = b"";
+    let icon_url: Option<Url> = option::none();
+    let (treasury_cap, meta_data) = coin::create_currency<LYT>(withness, decimal, symbol, name, description, icon_url, ctx);
 
     transfer::public_freeze_object(meta_data);
     transfer::public_transfer(treasury_cap, tx_context::sender(ctx));
