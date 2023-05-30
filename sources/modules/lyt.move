@@ -14,7 +14,7 @@ module loyaltychain::lyt {
 
   // icon can be updated later with update_icon_url
   public fun create_coin(withness: LYT, ctx: &mut TxContext){
-    let decimal = 7;
+    let decimal = 9;
     let symbol = b"LYT";
     let name = b"LYT";
     let description = b"";
