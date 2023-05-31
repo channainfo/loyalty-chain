@@ -81,6 +81,11 @@ module loyaltychain::partnerable_test {
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
 
+      // PartnerBoard partners_count increase to 1
+      assert!(partnerable::partners_count(&partner_board) == 1, 0);
+      // no public exists yet
+      assert!(partnerable::public_partners_count(&partner_board) == 0, 0);
+
       // Expect a partner is created with correct values
       let partner :&Partner = partnerable::borrow_partner_by_code(code, &partner_board);
       assert!(partnerable::partner_name(partner) == name, 0 );

@@ -4,14 +4,15 @@ module loyaltychain::partnerable {
   use sui::tx_context::{Self, TxContext};
   use sui::transfer;
   use sui::dynamic_object_field;
+  use sui::event;
 
   use std::string::{ String};
 
   struct PartnerBoard has key, store {
     id: UID,
     partners_count: u64,
-    companies_count: u64,
     public_partners_count: u64,
+    companies_count: u64,
     public_companies_count: u64
   }
 
@@ -64,6 +65,17 @@ module loyaltychain::partnerable {
     created_at: u64
   }
 
+  struct CompanyCreatedEvent has copy, drop {
+    company_id: ID,
+    partner_id: ID,
+    name: String,
+    excerpt: String,
+    content: String,
+    logo_url: String,
+    is_public: bool,
+    created_at: u64
+  }
+
   public fun init_create_boards(ctx: &mut TxContext) {
 
     let partner_board = PartnerBoard {
@@ -93,10 +105,10 @@ module loyaltychain::partnerable {
     is_public: bool,
     token_name: String,
     owner_address: address,
-    board: &mut PartnerBoard,
+    partner_board: &mut PartnerBoard,
     ctx: &mut TxContext): bool{
 
-    if(dynamic_object_field::exists_<String>(&board.id, code)){
+    if(dynamic_object_field::exists_<String>(&partner_board.id, code)){
       return false
     };
 
@@ -118,7 +130,7 @@ module loyaltychain::partnerable {
     };
 
     let partner_id = object::id(&partner);
-    dynamic_object_field::add<String, Partner>(&mut board.id, code, partner);
+    dynamic_object_field::add<String, Partner>(&mut partner_board.id, code, partner);
 
     let partner_cap = PartnerCap {
       id: object::new(ctx),
@@ -126,6 +138,11 @@ module loyaltychain::partnerable {
     };
 
     transfer::public_transfer(partner_cap, owner_address);
+
+    partner_board.partners_count = partner_board.partners_count + 1;
+    if(is_public) {
+      partner_board.public_partners_count = partner_board.public_partners_count + 1;
+    };
 
     let partner_created_event = PartnerCreateEvent{
       partner_id,
@@ -138,8 +155,69 @@ module loyaltychain::partnerable {
       created_at
     };
 
-    sui::event::emit(partner_created_event);
+    event::emit(partner_created_event);
     return true
+  }
+
+  public fun register_company(
+    name: String,
+    code: String,
+    excerpt: String,
+    content: String,
+    logo_url: String,
+    partner: &mut Partner,
+    company_board: &mut CompanyBoard,
+    partner_board: &mut PartnerBoard,
+    ctx: &mut TxContext ): bool {
+
+    let created_at = tx_context::epoch(ctx);
+    let partner_id = object::id(partner);
+    let is_public = partner.is_public;
+
+    if(dynamic_object_field::exists_<String>(&company_board.id, code)){
+      return false
+    };
+
+    let company = Company {
+      id: object::new(ctx),
+      name,
+      excerpt,
+      content,
+      logo_url,
+      is_public: is_public,
+      members_count: 064,
+      created_at,
+      partner_id
+    };
+
+    company_board.companies_count = company_board.companies_count + 1;
+    if(is_public){
+      company_board.public_companies_count = company_board.public_companies_count + 1;
+    };
+
+    partner_board.companies_count = partner_board.companies_count + 1;
+    if(partner.is_public){
+      partner_board.public_companies_count = partner_board.public_companies_count + 1;
+    };
+
+    partner.companies_count = partner.companies_count + 1;
+
+    let company_id = object::id(&company);
+    dynamic_object_field::add<String, Company>(&mut company_board.id, code, company);
+
+    let company_created_event = CompanyCreatedEvent {
+      company_id,
+      partner_id,
+      name,
+      excerpt,
+      content,
+      logo_url,
+      is_public: partner.is_public,
+      created_at,
+    };
+    event::emit(company_created_event);
+
+    true
   }
 
   // Helper boards
