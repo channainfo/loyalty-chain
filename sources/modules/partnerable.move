@@ -55,6 +55,7 @@ module loyaltychain::partnerable {
 
   struct Company has key, store {
     id: UID,
+    code: String,
     name: String,
     excerpt: String,
     content: String,
@@ -165,21 +166,30 @@ module loyaltychain::partnerable {
     excerpt: String,
     content: String,
     logo_url: String,
-    partner: &mut Partner,
+    partner_code: String,
     company_board: &mut CompanyBoard,
     partner_board: &mut PartnerBoard,
     ctx: &mut TxContext ): bool {
-
-    let created_at = tx_context::epoch(ctx);
-    let partner_id = object::id(partner);
-    let is_public = partner.is_public;
 
     if(dynamic_object_field::exists_<String>(&company_board.id, code)){
       return false
     };
 
+    let (partner_id, is_public) = {
+      let partner = borrow_mut_parter_by_code(partner_code, partner_board);
+      partner.companies_count = partner.companies_count + 1;
+      (
+        object::id(partner),
+        partner.is_public
+      )
+    };
+
+    let created_at = tx_context::epoch(ctx);
+
+    // we recommend to use partner_code::company_code
     let company = Company {
       id: object::new(ctx),
+      code,
       name,
       excerpt,
       content,
@@ -196,11 +206,9 @@ module loyaltychain::partnerable {
     };
 
     partner_board.companies_count = partner_board.companies_count + 1;
-    if(partner.is_public){
+    if(is_public){
       partner_board.public_companies_count = partner_board.public_companies_count + 1;
     };
-
-    partner.companies_count = partner.companies_count + 1;
 
     let company_id = object::id(&company);
     dynamic_object_field::add<String, Company>(&mut company_board.id, code, company);
@@ -212,7 +220,7 @@ module loyaltychain::partnerable {
       excerpt,
       content,
       logo_url,
-      is_public: partner.is_public,
+      is_public: is_public,
       created_at,
     };
     event::emit(company_created_event);
@@ -229,26 +237,30 @@ module loyaltychain::partnerable {
     partner_board.public_partners_count
   }
 
-  public fun companies_count(partner_board: &PartnerBoard): u64 {
+  public fun partners_companies_count(partner_board: &PartnerBoard): u64 {
     partner_board.companies_count
   }
 
-  public fun public_companies_count(partner_board: &PartnerBoard): u64 {
+  public fun partners_public_companies_count(partner_board: &PartnerBoard): u64 {
     partner_board.companies_count
   }
 
-
-  public fun total_companies_count(company_board: &CompanyBoard): u64 {
+  // Company board Helper
+  public fun companies_count(company_board: &CompanyBoard): u64 {
     company_board.companies_count
   }
 
-  public fun total_public_companies_count(company_board: &CompanyBoard): u64 {
+  public fun public_companies_count(company_board: &CompanyBoard): u64 {
     company_board.public_companies_count
   }
 
   // Helper partner
   public fun borrow_partner_by_code(code: String, partner_board: &PartnerBoard): &Partner {
     dynamic_object_field::borrow<String, Partner>(&partner_board.id, code)
+  }
+
+  public fun borrow_mut_parter_by_code(code: String, partner_board: &mut PartnerBoard): &mut Partner {
+    dynamic_object_field::borrow_mut<String, Partner>(&mut partner_board.id, code)
   }
 
   public fun partner_name(partner: &Partner): String {
@@ -286,9 +298,39 @@ module loyaltychain::partnerable {
     partner.companies_count
   }
 
+
   // PartnerCap Helper
   public fun partner_cap_partner_id(partner_cap: &PartnerCap): ID {
     partner_cap.partner_id
+  }
+
+  // Company Helper
+  public fun borrow_company_by_code(code: String, company_board: &CompanyBoard): &Company {
+    dynamic_object_field::borrow<String, Company>(&company_board.id, code)
+  }
+
+  public fun company_code(company: &Company): String {
+    company.code
+  }
+
+  public fun company_name(company: &Company): String {
+    company.name
+  }
+
+  public fun company_excerpt(company: &Company): String {
+    company.excerpt
+  }
+
+  public fun company_content(company: &Company): String {
+    company.content
+  }
+
+  public fun company_logo_url(company: &Company): String {
+    company.logo_url
+  }
+
+  public fun company_partner_id(company: &Company): &ID {
+    &company.partner_id
   }
 
 }
