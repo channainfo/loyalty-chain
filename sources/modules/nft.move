@@ -8,7 +8,7 @@ module loyaltychain::nft {
   use sui::transfer;
 
   use std::string::{String};
-  use std::option::{Option};
+  use std::option::{Self, Option};
   use loyaltychain::partnerable::{Self, Partner};
   use loyaltychain::util;
 
@@ -91,9 +91,17 @@ module loyaltychain::nft {
     burned_at: u64
   }
 
-  public fun mint_nft_card(card_tier_name: String, card_type_name: String, partner: &mut Partner, ctx: &mut TxContext): NFTCard{
+  public fun mint_card(
+    card_tier_name: String,
+    card_type_name: String,
+    partner: &mut Partner,
+    ctx: &mut TxContext): Option<NFTCard>{
     let sender = tx_context::sender(ctx);
-    assert!(partnerable::partner_owner_address(partner) == sender, 0);
+
+    // assert!(partnerable::partner_owner_address(partner) == sender, 0);
+    if(partnerable::partner_owner_address(partner) != sender) {
+      return option::none<NFTCard>()
+    };
 
     let mut_card_tier = borrow_mut_card_tier_by_name(card_tier_name, partner);
     let card_tier_id = object::id(mut_card_tier);
@@ -101,7 +109,9 @@ module loyaltychain::nft {
     let mut_card_type = borrow_mut_card_type_by_name(card_type_name, mut_card_tier);
     let card_type_id = object::id(mut_card_type);
 
-    assert!(mut_card_type.current_issued_nunber < mut_card_type.max_supply, 0);
+    if(mut_card_type.current_issued_nunber >= mut_card_type.max_supply) {
+      return option::none<NFTCard>()
+    };
 
     let issued_number = mut_card_type.current_issued_nunber + 1;
     let issued_at = tx_context::epoch(ctx);
@@ -117,11 +127,19 @@ module loyaltychain::nft {
     mut_card_type.current_supply = mut_card_type.current_supply + 1;
     mut_card_type.current_issued_nunber = issued_number;
 
-    nft_card
+    option::some<NFTCard>(nft_card)
   }
 
-  public fun mint_nft_card_and_transfer(card_tier_name: String, card_type_name: String, receiver: address, partner: &mut Partner, ctx: &mut TxContext){
-    let nft_card = mint_nft_card(card_tier_name, card_type_name, partner, ctx);
+  public fun mint_and_transfer_card(
+    card_tier_name: String,
+    card_type_name: String,
+    receiver: address,
+    partner: &mut Partner,
+    ctx: &mut TxContext) {
+
+    let nft_cardable = mint_card(card_tier_name, card_type_name, partner, ctx);
+
+    let nft_card = option::destroy_some<NFTCard>(nft_cardable);
 
     let card_id = object::id(&nft_card);
     let card_created_event = NFTCardCreatedEvent {
@@ -139,7 +157,7 @@ module loyaltychain::nft {
     event::emit(card_created_event);
   }
 
-  public fun burn(card_tier_name: String, card_type_name: String, partner: &mut Partner, nft_card: NFTCard, ctx: &mut TxContext){
+  public fun burn_card(card_tier_name: String, card_type_name: String, nft_card: NFTCard, partner: &mut Partner, ctx: &mut TxContext){
     let sender = tx_context::sender(ctx);
     assert!(partnerable::partner_owner_address(partner) == sender, 0);
 
@@ -168,7 +186,7 @@ module loyaltychain::nft {
     event::emit(nft_card_burned_event);
   }
 
-  public fun transfer(nft_card: NFTCard, receiver: address) {
+  public fun transfer_card(nft_card: NFTCard, receiver: address) {
     transfer::transfer(nft_card, receiver);
   }
 
@@ -273,37 +291,41 @@ module loyaltychain::nft {
     true
   }
 
+  // CardTier Helper
   public fun borrow_mut_card_tier_by_name(card_tier_name: String, partner: &mut Partner,): &mut NFTCardTier {
     let mut_partner_id = partnerable::borrow_mut_partner_id(partner);
     dynamic_object_field::borrow_mut<String, NFTCardTier>(mut_partner_id, card_tier_name)
   }
 
-  public fun borrow_mut_card_type_by_name(card_type_name: String, card_tier: &mut NFTCardTier): &mut NFTCardType {
-    dynamic_object_field::borrow_mut<String, NFTCardType>(&mut card_tier.id, card_type_name)
-  }
-
-  // CardTier Helper
   public fun card_tier_name(card_tier: &NFTCardTier): String {
     card_tier.name
   }
+
   public fun card_tier_description(card_tier: &NFTCardTier): String {
     card_tier.description
   }
+
   public fun card_tier_image_url(card_tier: &NFTCardTier): &Option<Url> {
     &card_tier.image_url
   }
+
   public fun card_tier_benefit(card_tier: &NFTCardTier): u8 {
     card_tier.benefit
   }
 
   // CardType Helper
+  public fun borrow_mut_card_type_by_name(card_type_name: String, card_tier: &mut NFTCardTier): &mut NFTCardType {
+    dynamic_object_field::borrow_mut<String, NFTCardType>(&mut card_tier.id, card_type_name)
+  }
 
   public fun card_type_name(card_type: &NFTCardType): String {
     card_type.name
   }
+
   public fun card_type_image_url(card_type: &NFTCardType): &Option<Url> {
     &card_type.image_url
   }
+
   public fun card_type_max_supply(card_type: &NFTCardType): u64 {
     card_type.max_supply
   }
@@ -324,4 +346,8 @@ module loyaltychain::nft {
     card_type.benefit
   }
 
+  // NFTCard Helper
+  public fun card_issued_number(card: &NFTCard): u64 {
+    card.issued_number
+  }
 }
