@@ -1,4 +1,4 @@
-module loyaltychain::nft_card {
+module loyaltychain::nft {
 
   use sui::object::{Self, UID, ID};
   use sui::tx_context::{Self, TxContext};
@@ -173,8 +173,9 @@ module loyaltychain::nft_card {
   }
 
   public fun register_card_tier( name: String, description: String, image_url: String, benefit: u8, partner: &mut Partner, ctx: &mut TxContext): bool{
-    
-    assert!(partnerable::partner_owner_address(partner) == tx_context::sender(ctx), 0);
+    if(partnerable::partner_owner_address(partner) != tx_context::sender(ctx)){
+      return false
+    };
 
     let partner_id = object::id(partner);
     let mut_parnter_id = partnerable::borrow_mut_partner_id(partner);
@@ -276,4 +277,19 @@ module loyaltychain::nft_card {
   public fun borrow_mut_card_type_by_name(card_type_name: String, card_tier: &mut NFTCardTier): &mut NFTCardType {
     dynamic_object_field::borrow_mut<String, NFTCardType>(&mut card_tier.id, card_type_name)
   }
+
+  // CardTier Helper
+  public fun card_tier_name(card_tier: &NFTCardTier): String {
+    card_tier.name
+  }
+  public fun card_tier_description(card_tier: &NFTCardTier): String {
+    card_tier.description
+  }
+  public fun card_tier_image_url(card_tier: &NFTCardTier): &Option<Url> {
+    &card_tier.image_url
+  }
+  public fun card_tier_benefit(card_tier: &NFTCardTier): u8 {
+    card_tier.benefit
+  }
+
 }
