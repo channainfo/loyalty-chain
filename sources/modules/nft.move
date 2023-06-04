@@ -214,7 +214,7 @@ module loyaltychain::nft {
     true
   }
 
-  public fun register_nft_card_type(
+  public fun register_card_type(
     name: String,
     card_tier_name: String,
     image_url: String,
@@ -223,6 +223,10 @@ module loyaltychain::nft {
     partner: &mut Partner,
     ctx: &mut TxContext
     ): bool{
+
+    if(partnerable::partner_owner_address(partner) != tx_context::sender(ctx)){
+      return false
+    };
 
     let partner_id = object::id(partner);
     let mut_card_tier = borrow_mut_card_tier_by_name(card_tier_name, partner);
@@ -290,6 +294,34 @@ module loyaltychain::nft {
   }
   public fun card_tier_benefit(card_tier: &NFTCardTier): u8 {
     card_tier.benefit
+  }
+
+  // CardType Helper
+
+  public fun card_type_name(card_type: &NFTCardType): String {
+    card_type.name
+  }
+  public fun card_type_image_url(card_type: &NFTCardType): &Option<Url> {
+    &card_type.image_url
+  }
+  public fun card_type_max_supply(card_type: &NFTCardType): u64 {
+    card_type.max_supply
+  }
+
+  public fun card_type_capped_amount(card_type: &NFTCardType): u64 {
+    card_type.capped_amount
+  }
+
+  public fun card_type_current_supply(card_type: &NFTCardType): u64 {
+    card_type.current_supply
+  }
+
+  public fun card_type_current_issued_number(card_type: &NFTCardType): u64 {
+    card_type.current_issued_nunber
+  }
+
+  public fun card_type_benefit(card_type: &NFTCardType): u8 {
+    card_type.benefit
   }
 
 }
