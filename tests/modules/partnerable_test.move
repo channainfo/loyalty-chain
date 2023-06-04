@@ -55,6 +55,7 @@ module loyaltychain::partnerable_test {
     let logo_url = string::utf8(b"https://cm-market.io/cmm.png");
     let is_public = false;
     let token_name = string::utf8(b"CMM");
+    let allow_nft_card = false;
 
     let scenario = test_scenario::begin(owner);
     {
@@ -69,7 +70,7 @@ module loyaltychain::partnerable_test {
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = partnerable::register_partner(
-        name, code, excerpt, content, logo_url,is_public, token_name, owner, &mut partner_board, ctx
+        name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
       // Expect a registration is successful
@@ -116,7 +117,7 @@ module loyaltychain::partnerable_test {
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = partnerable::register_partner(
-        name, code, excerpt, content, logo_url,is_public, token_name, owner, &mut partner_board, ctx
+        name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
       // Expect a registration will fail
@@ -144,6 +145,7 @@ module loyaltychain::partnerable_test {
     let logo_url = string::utf8(b"");
     let is_public = true;
     let token_name = string::utf8(b"CMG");
+    let allow_nft_card = true;
 
     let company_name = string::utf8(b"Resort and Spa");
     let company_code = string::utf8(b"RAS");
@@ -164,7 +166,7 @@ module loyaltychain::partnerable_test {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
       // Already tested
-      partnerable::register_partner(name, code, excerpt, content, logo_url, is_public, token_name,owner,  &mut partner_board, ctx);
+      partnerable::register_partner(name, code, excerpt, content, logo_url, is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx);
       test_scenario::return_shared<PartnerBoard>(partner_board);
     };
 
@@ -242,5 +244,10 @@ module loyaltychain::partnerable_test {
     // Expect an event is emitted
     assert!(test_scenario::num_user_events(&effects) == 1, 0);
     test_scenario::end(scenario);
+  }
+
+  #[test]
+  public fun test_mint_nft_card_type(){
+    
   }
 }

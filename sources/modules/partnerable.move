@@ -8,6 +8,8 @@ module loyaltychain::partnerable {
 
   use std::string::{ String};
 
+  // use loyaltychain::nft_card::{Self, NFTCardType};
+
   struct PartnerBoard has key, store {
     id: UID,
     partners_count: u64,
@@ -28,6 +30,7 @@ module loyaltychain::partnerable {
     owner_address: address,
     companies_count: u64,
     created_at: u64,
+    allow_nft_card: bool
     // token: Option<PartnerTOken>
   }
 
@@ -62,6 +65,7 @@ module loyaltychain::partnerable {
     logo_url: String,
     is_public: bool,
     members_count: u128,
+    owner_address: address,
     partner_id: ID,
     created_at: u64
   }
@@ -69,6 +73,7 @@ module loyaltychain::partnerable {
   struct CompanyCreatedEvent has copy, drop {
     company_id: ID,
     partner_id: ID,
+    owner_address: address,
     name: String,
     excerpt: String,
     content: String,
@@ -106,6 +111,7 @@ module loyaltychain::partnerable {
     is_public: bool,
     token_name: String,
     owner_address: address,
+    allow_nft_card: bool,
     partner_board: &mut PartnerBoard,
     ctx: &mut TxContext): bool{
 
@@ -116,6 +122,7 @@ module loyaltychain::partnerable {
     let _sender = tx_context::sender(ctx);
     let id = object::new(ctx);
     let created_at = tx_context::epoch(ctx);
+
     let partner = Partner {
       id,
       name,
@@ -127,7 +134,8 @@ module loyaltychain::partnerable {
       token_name,
       owner_address,
       companies_count: 0u64,
-      created_at
+      created_at,
+      allow_nft_card,
     };
 
     let partner_id = object::id(&partner);
@@ -175,14 +183,17 @@ module loyaltychain::partnerable {
       return false
     };
 
-    let (partner_id, is_public) = {
+    let (partner_id, is_public, partner_owner_address) = {
       let partner = borrow_mut_parter_by_code(partner_code, partner_board);
       partner.companies_count = partner.companies_count + 1;
       (
         object::id(partner),
-        partner.is_public
+        partner.is_public,
+        partner.owner_address
       )
     };
+    let owner_address = tx_context::sender(ctx);
+    assert!(partner_owner_address == owner_address, 0);
 
     let created_at = tx_context::epoch(ctx);
 
@@ -195,6 +206,7 @@ module loyaltychain::partnerable {
       content,
       logo_url,
       is_public: is_public,
+      owner_address,
       members_count: 064,
       created_at,
       partner_id
@@ -221,12 +233,36 @@ module loyaltychain::partnerable {
       content,
       logo_url,
       is_public: is_public,
+      owner_address,
       created_at,
     };
     event::emit(company_created_event);
 
     true
   }
+
+  // public fun mint_nft_card_type(
+  //   name: String,
+  //   tier: String,
+  //   image_url: String,
+  //   total_supply: u64,
+  //   percentage_discount: u8,
+  //   capped_amount: u64,
+  //   partner: &mut Partner,
+  //   ctx: &mut TxContext): bool{
+
+  //   assert!(partner.owner_address == tx_context::sender(ctx), 0);
+
+  //   if(dynamic_object_field::exists_<String>(&partner.id, name)) {
+  //     return false
+  //   };
+
+  //   let partner_id = object::id(partner);
+  //   let nft_card_type = nft_card::mint_nft_card_type(name, tier, image_url, total_supply, percentage_discount, capped_amount, partner_id, ctx);
+  //   dynamic_object_field::add<String, NFTCardType>(&mut partner.id, name, nft_card_type);
+
+  //   true
+  // }
 
   // Helper boards
   public fun partners_count(partner_board: &PartnerBoard): u64 {
@@ -261,6 +297,10 @@ module loyaltychain::partnerable {
 
   public fun borrow_mut_parter_by_code(code: String, partner_board: &mut PartnerBoard): &mut Partner {
     dynamic_object_field::borrow_mut<String, Partner>(&mut partner_board.id, code)
+  }
+
+  public fun borrow_mut_partner_id(partner: &mut Partner): &mut UID {
+    &mut partner.id
   }
 
   public fun partner_name(partner: &Partner): String {
@@ -298,6 +338,10 @@ module loyaltychain::partnerable {
     partner.companies_count
   }
 
+  public fun partner_allow_nft_card(partner: &Partner): bool {
+    partner.allow_nft_card
+  }
+
 
   // PartnerCap Helper
   public fun partner_cap_partner_id(partner_cap: &PartnerCap): ID {
@@ -331,6 +375,10 @@ module loyaltychain::partnerable {
 
   public fun company_partner_id(company: &Company): &ID {
     &company.partner_id
+  }
+
+  public fun company_owner_address(company: &Company): address {
+    company.owner_address
   }
 
 }
