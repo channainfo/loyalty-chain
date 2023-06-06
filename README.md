@@ -1,12 +1,11 @@
 # Getting started with Loyalty Chain
 
-Loyalty system is a industry agnostic and it is a must-have among retail, banking, consumer goods, travel, hospitality, telecom, aviation, ecom.
+LOY Is the native token for this Loyaltychain
 
 Run test
 
 ```sh
 sui move test
-
 ```
 
 ## Objects on chain
