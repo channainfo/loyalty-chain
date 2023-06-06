@@ -2,6 +2,9 @@
 module loyaltychain::util_test {
 
   use sui::address::{Self};
+  use sui::url::{Url};
+  use std::string::{Self, String};
+  use std::option::{Self, Option};
   use loyaltychain::util::{Self};
 
   #[test]
@@ -30,5 +33,24 @@ module loyaltychain::util_test {
     let message = b"";
     let value: String = string::utf8(b"String as value");
     loyaltychain::util::print(message, &value);
+  }
+
+  #[test]
+  public fun test_try_url_from_string(){
+
+    // Its return Option<Url> with value if string is present
+    {
+      let value: String = string::utf8(b"https://loyaltychain.sui/");
+      let url_value: Option<Url> = util::try_url_from_string(&value);
+      assert!(option::is_some<Url>(&url_value) == true, 0);
+    };
+
+    // It return an empty url if string is not present
+    {
+      let value: String = string::utf8(b"");
+      let url_value: Option<Url> = util::try_url_from_string(&value);
+      assert!(option::is_none<Url>(&url_value) == true, 0);
+    };
+
   }
 }
