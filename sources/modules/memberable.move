@@ -154,7 +154,7 @@ module loyaltychain::memberable {
     dynamic_object_field::add<ID, NFTCard>(&mut member_nft_card.id, nft_card_id, nft_card)
   }
 
-  public fun take_nft_card(member: &mut Member, nft_card_id: ID, _ctx: &mut TxContext): NFTCard {
+  public fun take_nft_card(member: &mut Member, nft_card_id: ID): NFTCard {
 
     let member_nft_card = dynamic_object_field::borrow_mut<vector<u8>, MemberNFTCard>(&mut member.id, NFT_CARD_KEY);
     let nft_card = dynamic_object_field::remove<ID, NFTCard>(&mut member_nft_card.id, nft_card_id);
@@ -162,7 +162,7 @@ module loyaltychain::memberable {
   }
 
   public fun take_and_transfer_nft_card(sender: &mut Member, nft_card_id: ID, receiver: &mut Member, ctx: &mut TxContext){
-    let nft_card = take_nft_card(sender, nft_card_id, ctx);
+    let nft_card = take_nft_card(sender, nft_card_id);
 
     let transfer_event = MemberTranferedNFTCardEvent {
       sender_id: object::id(sender),
@@ -245,5 +245,10 @@ module loyaltychain::memberable {
   public fun borrow_mut_coin_by_metadata_id<T>(member: &mut Member, metadata_id: ID): &mut Coin<T> {
     let existing_coin = dynamic_object_field::borrow_mut<ID, Coin<T>>(&mut member.id, metadata_id);
     existing_coin
+  }
+
+  public fun borrow_nft_card_by_id(member: &Member, nft_card_id: ID): &NFTCard {
+    let member_nft_card = dynamic_object_field::borrow<vector<u8>, MemberNFTCard>(&member.id, NFT_CARD_KEY);
+    dynamic_object_field::borrow<ID, NFTCard>(&member_nft_card.id, nft_card_id)
   }
 }
