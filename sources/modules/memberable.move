@@ -8,6 +8,9 @@ module loyaltychain::memberable {
 
   use std::string::{String};
   use loyaltychain::util::{Self};
+  use loyaltychain::nft::{NFTCard};
+
+  const NFT_CARD_KEY: vector<u8> = b"nft_cards";
 
   struct MemberBoard has key, store {
     id: UID,
@@ -19,6 +22,10 @@ module loyaltychain::memberable {
     nick_name: String,
     code: vector<u8>,
     owner: address,
+  }
+
+  struct MemberNFTCard has key, store {
+    id: UID
   }
 
   struct MemberReceivedCoinEvent has copy, drop {
@@ -43,6 +50,19 @@ module loyaltychain::memberable {
     code: vector<u8>,
     nick_name: String,
     owner: address,
+    created_at: u64
+  }
+
+  struct MemberReceivedNFTCardEvent has drop, copy {
+    member_id: ID,
+    nft_card_id: ID,
+    created_at: u64
+  }
+
+  struct MemberTranferedNFTCardEvent has drop, copy {
+    sender_id: ID,
+    receiver_id: ID,
+    nft_card_id: ID,
     created_at: u64
   }
 
@@ -114,6 +134,49 @@ module loyaltychain::memberable {
     };
 
     event::emit(sent_event);
+  }
+
+  public fun receive_nft_card(member: &mut Member, nft_card: NFTCard, ctx: &mut TxContext){
+    if(!dynamic_object_field::exists_<vector<u8>>(&member.id, NFT_CARD_KEY)){
+
+      let member_nft_card = MemberNFTCard {
+        id: object::new(ctx)
+      };
+
+      let received_event = MemberReceivedNFTCardEvent {
+        member_id: object::id(member),
+        nft_card_id: object::id(&nft_card),
+        created_at: tx_context::epoch(ctx)
+      };
+
+      dynamic_object_field::add<vector<u8>, MemberNFTCard>(&mut member.id, NFT_CARD_KEY, member_nft_card);
+      event::emit(received_event);
+    };
+
+    let member_nft_card = dynamic_object_field::borrow_mut<vector<u8>, MemberNFTCard>(&mut member.id, NFT_CARD_KEY);
+    let nft_card_id = object::id(&nft_card);
+    dynamic_object_field::add<ID, NFTCard>(&mut member_nft_card.id, nft_card_id, nft_card)
+  }
+
+  public fun take_nft_card(member: &mut Member, nft_card_id: ID, _ctx: &mut TxContext): NFTCard {
+
+    let member_nft_card = dynamic_object_field::borrow_mut<vector<u8>, MemberNFTCard>(&mut member.id, NFT_CARD_KEY);
+    let nft_card = dynamic_object_field::remove<ID, NFTCard>(&mut member_nft_card.id, nft_card_id);
+    nft_card
+  }
+
+  public fun take_and_transfer_nft_card(sender: &mut Member, nft_card_id: ID, receiver: &mut Member, ctx: &mut TxContext){
+    let nft_card = take_nft_card(sender, nft_card_id, ctx);
+
+    let transfer_event = MemberTranferedNFTCardEvent {
+      sender_id: object::id(sender),
+      receiver_id: object::id(receiver),
+      nft_card_id,
+      created_at: tx_context::epoch(ctx)
+    };
+
+    receive_nft_card(receiver, nft_card, ctx);
+    event::emit(transfer_event);
   }
 
   public fun register_member(nick_name: String, email: String, board: &mut MemberBoard, ctx: &mut TxContext): bool {
