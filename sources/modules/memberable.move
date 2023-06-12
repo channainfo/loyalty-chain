@@ -4,7 +4,7 @@ module loyaltychain::memberable {
   use sui::object::{Self, UID, ID };
   use sui::dynamic_object_field;
   use sui::event;
-  use sui::coin::{Self, Coin, CoinMetadata};
+  use sui::coin::{Self, Coin};
 
   use std::string::{String};
   use loyaltychain::util::{Self};
@@ -75,9 +75,7 @@ module loyaltychain::memberable {
     transfer::public_share_object(board);
   }
 
-  public fun receive_coin<T>(member: &mut Member, coin: Coin<T>, metadata: &CoinMetadata<T>, ctx: &TxContext){
-
-    let metadata_id = object::id(metadata);
+  public fun receive_coin<T>(member: &mut Member, coin: Coin<T>, metadata_id: ID, ctx: &TxContext){
     let member_id = object::id(member);
     let amount = coin::value(&coin);
     let received_at = tx_context::epoch(ctx);
@@ -104,8 +102,7 @@ module loyaltychain::memberable {
     event::emit(received_coin_event);
   }
 
-  public fun split_coin<T>(value: u64, member: &mut Member, metadata: &CoinMetadata<T>, ctx: &mut TxContext): Coin<T>{
-    let metadata_id = object::id(metadata);
+  public fun split_coin<T>(value: u64, member: &mut Member, metadata_id: ID, ctx: &mut TxContext): Coin<T>{
     let coin_exist = dynamic_object_field::exists_<ID>(&member.id, metadata_id);
     assert!(coin_exist, 0);
 
@@ -115,12 +112,11 @@ module loyaltychain::memberable {
     split_coin
   }
 
-  public fun split_and_transfer_coin<T>(value: u64, sender: &mut Member, receiver: &mut Member, meta_data: &CoinMetadata<T>, ctx: &mut TxContext) {
+  public fun split_and_transfer_coin<T>(value: u64, sender: &mut Member, receiver: &mut Member, metadata_id: ID, ctx: &mut TxContext) {
 
-    let split_coin = split_coin<T>(value, sender, meta_data, ctx);
-    receive_coin<T>(receiver, split_coin, meta_data, ctx);
+    let split_coin = split_coin<T>(value, sender, metadata_id, ctx);
+    receive_coin<T>(receiver, split_coin, metadata_id, ctx);
 
-    let metadata_id = object::id(meta_data);
     let sender_id = object::id(sender);
     let receiver_id = object::id(receiver);
     let sent_at = tx_context::epoch(ctx);
@@ -233,5 +229,21 @@ module loyaltychain::memberable {
     let code = util::hash_string(email);
 
     dynamic_object_field::borrow<vector<u8>, Member>(&board.id, code)
+  }
+
+  public fun borrow_mut_member_by_email(board: &mut MemberBoard, email: &String): &mut Member {
+    let code = util::hash_string(email);
+
+    dynamic_object_field::borrow_mut<vector<u8>, Member>(&mut board.id, code)
+  }
+
+  public fun borrow_coin_by_metadata_id<T>(member: &Member, metadata_id: ID): &Coin<T> {
+    let existing_coin = dynamic_object_field::borrow<ID, Coin<T>>(& member.id, metadata_id);
+    existing_coin
+  }
+
+  public fun borrow_mut_coin_by_metadata_id<T>(member: &mut Member, metadata_id: ID): &mut Coin<T> {
+    let existing_coin = dynamic_object_field::borrow_mut<ID, Coin<T>>(&mut member.id, metadata_id);
+    existing_coin
   }
 }
