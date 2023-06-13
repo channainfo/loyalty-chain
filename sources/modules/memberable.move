@@ -40,7 +40,7 @@ module loyaltychain::memberable {
   struct MemberSentCoinEvent has copy, drop {
     metadata_id: ID,
     sender_id: ID,
-    receiver_id: ID,
+    receiver_address: address,
     amount: u64,
     sent_at: u64
   }
@@ -75,6 +75,10 @@ module loyaltychain::memberable {
     transfer::public_share_object(board);
   }
 
+  // make sure metadata_id: ID is the id of the CoinMetadata from the client
+  // eq: metadata: &CoinMatadata and metadata_id: object::id(metadata)
+  // It is easy to mock ID than constructing a real CoinMetadata object
+  // coin is the coin from your own address
   public fun receive_coin<T>(member: &mut Member, coin: Coin<T>, metadata_id: ID, ctx: &TxContext){
     let member_id = object::id(member);
     let amount = coin::value(&coin);
@@ -103,6 +107,8 @@ module loyaltychain::memberable {
   }
 
   public fun split_coin<T>(value: u64, member: &mut Member, metadata_id: ID, ctx: &mut TxContext): Coin<T>{
+    assert!(member.owner == tx_context::sender(ctx), 0);
+
     let coin_exist = dynamic_object_field::exists_<ID>(&member.id, metadata_id);
     assert!(coin_exist, 0);
 
@@ -112,19 +118,18 @@ module loyaltychain::memberable {
     split_coin
   }
 
-  public fun split_and_transfer_coin<T>(value: u64, sender: &mut Member, receiver: &mut Member, metadata_id: ID, ctx: &mut TxContext) {
-
+  // transfer to an address and then allow member to claim
+  public fun split_and_transfer_coin<T>(value: u64, sender: &mut Member, receiver_address: address, metadata_id: ID, ctx: &mut TxContext) {
     let split_coin = split_coin<T>(value, sender, metadata_id, ctx);
-    receive_coin<T>(receiver, split_coin, metadata_id, ctx);
 
     let sender_id = object::id(sender);
-    let receiver_id = object::id(receiver);
     let sent_at = tx_context::epoch(ctx);
+    transfer::public_transfer(split_coin, receiver_address);
 
     let sent_event = MemberSentCoinEvent {
       metadata_id,
       sender_id,
-      receiver_id,
+      receiver_address,
       amount: value,
       sent_at
     };
