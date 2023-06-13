@@ -267,6 +267,147 @@ module loyaltychain::memberable_test {
   }
 
   #[test]
+  public fun test_split_and_transfer_coin(){
+    use sui::test_scenario;
+    use sui::coin::{Self, Coin};
+
+    use sui::sui::{SUI};
+    use sui::object;
+    use loyaltychain::loy::{LOY};
+    use loyaltychain::memberable::{Self, MemberBoard};
+    use std::string::{Self, String};
+
+    let member_address1 = @0001;
+    let member_email1: String = string::utf8(b"admin1@loyaltychain.org");
+    let member_nick_name1: String = string::utf8(b"Scoth2");
+
+    let member_address2 = @0002;
+    let member_email2: String = string::utf8(b"admin2@loyaltychain.org");
+    let member_nick_name2: String = string::utf8(b"Scoth2");
+
+    let scenario = test_scenario::begin(member_address1);
+
+    // setup member_board
+    {
+      let ctx = test_scenario::ctx(&mut scenario);
+      memberable::init_create_member_board(ctx);
+    };
+
+    // Start creating membership
+    test_scenario::next_tx(&mut scenario, member_address1);
+    {
+      let board = test_scenario::take_shared<MemberBoard>(&scenario);
+      let ctx = test_scenario::ctx(&mut scenario);
+      let result1 = memberable::register_member(member_nick_name1, member_email1, &mut board, ctx);
+
+      // expect registration to be successful
+      assert!(result1 == true, 0);
+      test_scenario::return_shared<MemberBoard>(board);
+    };
+
+    // Start creating membership
+    test_scenario::next_tx(&mut scenario, member_address2);
+    {
+      let board = test_scenario::take_shared<MemberBoard>(&scenario);
+      let ctx = test_scenario::ctx(&mut scenario);
+      let result2 = memberable::register_member(member_nick_name2, member_email2, &mut board, ctx);
+
+      // expect registration to be successful
+      assert!(result2 == true, 0);
+      test_scenario::return_shared<MemberBoard>(board);
+    };
+
+    // Execution call
+    test_scenario::next_tx(&mut scenario, member_address1);
+    let (metadata_loy, metadata_sui) = {
+
+      let board = test_scenario::take_shared(&scenario);
+      let member1 = memberable::borrow_mut_member_by_email(&mut board, &member_email1);
+
+      let ctx = test_scenario::ctx(&mut scenario);
+      let amount_coin1 = coin::mint_for_testing<LOY>(1000u64, ctx);
+      let amount_coin2 = coin::mint_for_testing<LOY>(2000u64, ctx);
+
+      let amount_coin3 = coin::mint_for_testing<SUI>(500u64, ctx);
+
+      // CoinMetadata#id
+      let metadata_loy = object::id(&amount_coin1);
+      let metadata_sui = object::id(&amount_coin3);
+
+      memberable::receive_coin<LOY>(member1, amount_coin1, metadata_loy, ctx);
+      memberable::receive_coin<LOY>(member1, amount_coin2, metadata_loy, ctx);
+      memberable::receive_coin<SUI>(member1, amount_coin3, metadata_sui, ctx);
+
+      test_scenario::return_shared<MemberBoard>(board);
+      (metadata_loy, metadata_sui)
+    };
+
+    // Expect output for the return coin object
+    test_scenario::next_tx(&mut scenario, member_address1);
+    {
+      let board = test_scenario::take_shared(&scenario);
+      let member1 = memberable::borrow_mut_member_by_email(&mut board, &member_email1);
+      let ctx = test_scenario::ctx(&mut scenario);
+
+      memberable::split_and_transfer_coin<LOY>(1700, member1, member_address2, metadata_loy, ctx);
+      memberable::split_and_transfer_coin<SUI>(100, member1, member_address2, metadata_sui, ctx);
+
+      test_scenario::return_shared<MemberBoard>(board);
+    };
+
+    // Expect output for owner remaining coin
+    test_scenario::next_tx(&mut scenario, member_address1);
+    {
+      let board = test_scenario::take_shared(&scenario);
+      let member1 = memberable::borrow_mut_member_by_email(&mut board, &member_email1);
+
+      let coin_loy: &Coin<LOY> = memberable::borrow_coin_by_metadata_id<LOY>(member1, metadata_loy);
+      let coin_sui: &Coin<SUI> = memberable::borrow_coin_by_metadata_id<SUI>(member1, metadata_sui);
+
+      assert!(coin::value(coin_loy) == 1300, 0);
+      assert!(coin::value(coin_sui) == 400, 0);
+
+      test_scenario::return_shared<MemberBoard>(board);
+    };
+
+    // Expect member_address2 receive coin correctly
+    test_scenario::next_tx(&mut scenario, member_address2);
+    {
+      let board = test_scenario::take_shared(&scenario);
+      let member2 = memberable::borrow_mut_member_by_email(&mut board, &member_email2);
+
+
+      let coin_loy = test_scenario::take_from_address<Coin<LOY>>(&scenario, member_address2);
+      let coin_sui = test_scenario::take_from_address<Coin<SUI>>(&scenario, member_address2);
+
+      assert!(coin::value(&coin_loy) == 1700, 0);
+      assert!(coin::value(&coin_sui) == 100, 0);
+
+      let ctx = test_scenario::ctx(&mut scenario);
+      memberable::receive_coin<LOY>(member2, coin_loy, metadata_loy, ctx);
+      memberable::receive_coin<SUI>(member2, coin_sui, metadata_sui, ctx);
+      test_scenario::return_shared<MemberBoard>(board);
+    };
+
+     // Expect coin in the member account
+    test_scenario::next_tx(&mut scenario, member_address2);
+    {
+      let board = test_scenario::take_shared(&scenario);
+      let member2 = memberable::borrow_mut_member_by_email(&mut board, &member_email2);
+
+      let coin_loy: &Coin<LOY> = memberable::borrow_coin_by_metadata_id<LOY>(member2, metadata_loy);
+      let coin_sui: &Coin<SUI> = memberable::borrow_coin_by_metadata_id<SUI>(member2, metadata_sui);
+
+      assert!(coin::value(coin_loy) == 1700, 0);
+      assert!(coin::value(coin_sui) == 100, 0);
+
+      test_scenario::return_shared<MemberBoard>(board);
+    };
+
+    test_scenario::end(scenario);
+  }
+
+  #[test]
   public fun test_receive_nft_card(){
     use sui::test_scenario;
     use sui::object;
