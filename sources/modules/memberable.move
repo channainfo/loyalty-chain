@@ -61,7 +61,7 @@ module loyaltychain::memberable {
 
   struct MemberTranferedNFTCardEvent has drop, copy {
     sender_id: ID,
-    receiver_id: ID,
+    receiver_address: address,
     nft_card_id: ID,
     created_at: u64
   }
@@ -166,17 +166,23 @@ module loyaltychain::memberable {
     nft_card
   }
 
-  public fun take_and_transfer_nft_card(sender: &mut Member, nft_card_id: ID, receiver: &mut Member, ctx: &mut TxContext){
-    let nft_card = take_nft_card(sender, nft_card_id);
+  public fun take_and_transfer_nft_card(member: &mut Member, nft_card_id: ID, receiver_address: address, ctx: &mut TxContext){
+
+    let sender_address = tx_context::sender(ctx);
+    assert!(member.owner == sender_address, 0);
+
+    let nft_card = take_nft_card(member, nft_card_id);
+    transfer::public_transfer(nft_card, receiver_address);
+
+    let created_at = tx_context::epoch(ctx);
 
     let transfer_event = MemberTranferedNFTCardEvent {
-      sender_id: object::id(sender),
-      receiver_id: object::id(receiver),
+      sender_id: object::id(member),
+      receiver_address,
       nft_card_id,
-      created_at: tx_context::epoch(ctx)
+      created_at
     };
 
-    receive_nft_card(receiver, nft_card, ctx);
     event::emit(transfer_event);
   }
 
