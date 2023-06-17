@@ -1,6 +1,6 @@
 # Getting started with Loyalty Chain
 
-LOY Is the native token for this Loyaltychain
+LOY Is the native token. Checkout our white paper: <https://github.com/channainfo/loyalty-chain/blob/master/docs/whitepaper.md>
 
 Run test
 
