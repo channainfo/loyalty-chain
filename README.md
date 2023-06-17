@@ -8,33 +8,82 @@ Run test
 sui move test
 ```
 
-## Objects on chain
+## Objects On-chain
 
-- AdminCap, CompanyCap
-- Company( name, logo_url, description, token_name, total_members, owner_id )
+### Implemented
+
+- AdminCap
+- Partner (name, code, excerpt, content, logo, is_public, token_name, owner_address, companies_count)
+- Company( name, code, excerpt, content, logo_url, is_public, members_count, owner_address, partner_id )
 - Member( code, owner_address, first_name, last_name, nickname, [companies], [coins])
-- RewardType(loyalty, cashback)
-- Reward(company_id, member_id, total_coin, reward_type, locked)
-- Orders( member_id, company_id, number, created_at)
-- LineItems ( order_id, name, amount )
-- Store (company_id, name, description)
-- Product (name, descripton, url, price, redeemable_amount, company_id, partner_id)
-- Points (account_id, total_point, redeems_count, rewards_count)
-- Voucher presale (total_point, price_coin, scratched)
-- Token lock and staking
 
-Coin can be locked for certain amount of time
+- LOY token
+- NFTCardTier(name, description, image_url, benefit, partner_id)
+- NFTCardType(name, image_url, max_supply, current_supply, current_issued_number, benefit, capped_amount, card_tier_id, partner_id)
+- NFTCard(card_tier_id, card_type_id, issued_number, issued_at)
 
-### Public entries
+### Usecases
 
-- Register a company ( AdminCap )
-- Company register a member ( CompanyCap )
-- Member registration to a company
-- EarnPoint(CompanyCap)
-- UsePoint(CompanyCap)
-- SendPoint
+#### Point System
 
-### Event
+Issue an nft card with a type of "point", everytime a customer makes a purchase, a certain number of points will be minted and transfer to the customer.
+
+#### Discount Card
+
+Issue an nft card with a type "disccount", everytime a customer make a purchase, check the data onchain to get the discount.
+
+#### Loyalty
+
+Issue an nft card with a type "loyalty", everytime a customer purchase increase, increase an activity count and upgrade the tier accordingly.
+
+#### Voucher
+
+Issue an nft card with a type of "vouchers", everytime users use the service, burn a number of point from the voucher.
+
+## Interoperability
+
+- Presale
+- Swap
+- Escrow
+- Auction
+- Marketplace
+
+## Activity On-chain
+
+### Initialization
+
+- init admin cap
+- init parnter ( partner listing,company listing)
+- init member ( member listing )
+
+### Admin Actions
+
+Required the admin cap
+
+- Register a partner
+- Register a company
+- Register a member
+
+### Partner Actions
+
+- Register a company
+- Manage NFT
+- Issue an NFT card
+- Inquiry
+
+### Member Actions
+
+- Register for a membership(Self custody)
+- Receive coin(claim)
+- Transfer coin to an address
+- Receive NFT(claim)
+- Transfer NFT
+
+## Event
+
+- Partner registration
+- Company registration
+- Member registration
 
 ## References
 

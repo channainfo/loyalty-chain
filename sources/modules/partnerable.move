@@ -58,8 +58,8 @@ module loyaltychain::partnerable {
 
   struct Company has key, store {
     id: UID,
-    code: String,
     name: String,
+    code: String,
     excerpt: String,
     content: String,
     logo_url: String,
@@ -175,6 +175,7 @@ module loyaltychain::partnerable {
     content: String,
     logo_url: String,
     partner_code: String,
+    partner_address: address,
     company_board: &mut CompanyBoard,
     partner_board: &mut PartnerBoard,
     ctx: &mut TxContext ): bool {
@@ -192,8 +193,8 @@ module loyaltychain::partnerable {
         partner.owner_address
       )
     };
-    let owner_address = tx_context::sender(ctx);
-    assert!(partner_owner_address == owner_address, 0);
+
+    assert!(partner_owner_address == partner_address, 0);
 
     let created_at = tx_context::epoch(ctx);
 
@@ -206,7 +207,7 @@ module loyaltychain::partnerable {
       content,
       logo_url,
       is_public: is_public,
-      owner_address,
+      owner_address: partner_address,
       members_count: 064,
       created_at,
       partner_id
@@ -233,36 +234,13 @@ module loyaltychain::partnerable {
       content,
       logo_url,
       is_public: is_public,
-      owner_address,
+      owner_address: partner_address,
       created_at,
     };
     event::emit(company_created_event);
 
     true
   }
-
-  // public fun mint_nft_card_type(
-  //   name: String,
-  //   tier: String,
-  //   image_url: String,
-  //   total_supply: u64,
-  //   percentage_discount: u8,
-  //   capped_amount: u64,
-  //   partner: &mut Partner,
-  //   ctx: &mut TxContext): bool{
-
-  //   assert!(partner.owner_address == tx_context::sender(ctx), 0);
-
-  //   if(dynamic_object_field::exists_<String>(&partner.id, name)) {
-  //     return false
-  //   };
-
-  //   let partner_id = object::id(partner);
-  //   let nft_card_type = nft_card::mint_nft_card_type(name, tier, image_url, total_supply, percentage_discount, capped_amount, partner_id, ctx);
-  //   dynamic_object_field::add<String, NFTCardType>(&mut partner.id, name, nft_card_type);
-
-  //   true
-  // }
 
   // Helper boards
   public fun partners_count(partner_board: &PartnerBoard): u64 {

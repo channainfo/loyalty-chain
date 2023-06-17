@@ -50,7 +50,7 @@ module loyaltychain::memberable_test {
     {
       let board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
-      let result = memberable::register_member(nick_name, email, &mut board, ctx);
+      let result = memberable::register_member(nick_name, email, owner, &mut board, ctx);
 
       // expect registration to be successful
       assert!(result == true, 0);
@@ -85,7 +85,7 @@ module loyaltychain::memberable_test {
       let ctx = test_scenario::ctx(&mut scenario);
 
       // it should failed
-      let result = memberable::register_member(nick_name, email, &mut board, ctx);
+      let result = memberable::register_member(nick_name, email, owner, &mut board, ctx);
       assert!(result == false, 0);
       test_scenario::return_shared<MemberBoard>(board);
     };
@@ -121,7 +121,7 @@ module loyaltychain::memberable_test {
     {
       let board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
-      let result = memberable::register_member(nick_name, email, &mut board, ctx);
+      let result = memberable::register_member(nick_name, email, owner, &mut board, ctx);
 
       // expect registration to be successful
       assert!(result == true, 0);
@@ -197,7 +197,7 @@ module loyaltychain::memberable_test {
     {
       let board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
-      let result = memberable::register_member(nick_name, email, &mut board, ctx);
+      let result = memberable::register_member(nick_name, email, owner, &mut board, ctx);
 
       // expect registration to be successful
       assert!(result == true, 0);
@@ -298,7 +298,7 @@ module loyaltychain::memberable_test {
     {
       let board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
-      let result1 = memberable::register_member(member_nick_name1, member_email1, &mut board, ctx);
+      let result1 = memberable::register_member(member_nick_name1, member_email1, member_address1, &mut board, ctx);
 
       // expect registration to be successful
       assert!(result1 == true, 0);
@@ -310,7 +310,7 @@ module loyaltychain::memberable_test {
     {
       let board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
-      let result2 = memberable::register_member(member_nick_name2, member_email2, &mut board, ctx);
+      let result2 = memberable::register_member(member_nick_name2, member_email2, member_address2, &mut board, ctx);
 
       // expect registration to be successful
       assert!(result2 == true, 0);
@@ -434,7 +434,7 @@ module loyaltychain::memberable_test {
     {
       let board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
-      let result = memberable::register_member(nick_name, email, &mut board, ctx);
+      let result = memberable::register_member(nick_name, email, owner, &mut board, ctx);
 
       // expect registration to be successful
       assert!(result == true, 0);
@@ -487,6 +487,7 @@ module loyaltychain::memberable_test {
         tier_description,
         tier_image_url,
         tier_benefit,
+        owner,
         partner,
         ctx
       );
@@ -513,6 +514,7 @@ module loyaltychain::memberable_test {
         type_image_url,
         max_supply,
         capped_amount,
+        owner,
         partner,
         ctx);
       assert!(result == true, 0);
@@ -530,7 +532,7 @@ module loyaltychain::memberable_test {
       let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = nft::mint_card(tier_name, type_name, partner, ctx);
+      let nft_cardable: Option<NFTCard> = nft::mint_card(tier_name, type_name, owner, partner, ctx);
       let nft_card = option::destroy_some<NFTCard>(nft_cardable);
       let nft_card_id = object::id(&nft_card);
 
@@ -584,7 +586,7 @@ module loyaltychain::memberable_test {
     {
       let board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
-      let result = memberable::register_member(nick_name, email, &mut board, ctx);
+      let result = memberable::register_member(nick_name, email, owner, &mut board, ctx);
 
       // expect registration to be successful
       assert!(result == true, 0);
@@ -637,6 +639,7 @@ module loyaltychain::memberable_test {
         tier_description,
         tier_image_url,
         tier_benefit,
+        owner,
         partner,
         ctx
       );
@@ -663,6 +666,7 @@ module loyaltychain::memberable_test {
         type_image_url,
         max_supply,
         capped_amount,
+        owner,
         partner,
         ctx);
       assert!(result == true, 0);
@@ -680,7 +684,7 @@ module loyaltychain::memberable_test {
       let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = nft::mint_card(tier_name, type_name, partner, ctx);
+      let nft_cardable: Option<NFTCard> = nft::mint_card(tier_name, type_name, owner, partner, ctx);
       let nft_card = option::destroy_some<NFTCard>(nft_cardable);
       let nft_card_id = object::id(&nft_card);
 
@@ -734,7 +738,7 @@ module loyaltychain::memberable_test {
     {
       let board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
-      let result = memberable::register_member(nick_name, email, &mut board, ctx);
+      let result = memberable::register_member(nick_name, email, owner, &mut board, ctx);
 
       // expect registration to be successful
       assert!(result == true, 0);
@@ -787,6 +791,7 @@ module loyaltychain::memberable_test {
         tier_description,
         tier_image_url,
         tier_benefit,
+        owner,
         partner,
         ctx
       );
@@ -813,6 +818,7 @@ module loyaltychain::memberable_test {
         type_image_url,
         max_supply,
         capped_amount,
+        owner,
         partner,
         ctx);
       assert!(result == true, 0);
@@ -830,7 +836,7 @@ module loyaltychain::memberable_test {
       let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = nft::mint_card(tier_name, type_name, partner, ctx);
+      let nft_cardable: Option<NFTCard> = nft::mint_card(tier_name, type_name, owner, partner, ctx);
       let nft_card = option::destroy_some<NFTCard>(nft_cardable);
       let nft_card_id = object::id(&nft_card);
 
