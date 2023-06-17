@@ -94,12 +94,12 @@ module loyaltychain::nft {
   public fun mint_card(
     card_tier_name: String,
     card_type_name: String,
+    partner_address: address,
     partner: &mut Partner,
     ctx: &mut TxContext): Option<NFTCard>{
-    let sender = tx_context::sender(ctx);
 
     // assert!(partnerable::partner_owner_address(partner) == sender, 0);
-    if(partnerable::partner_owner_address(partner) != sender) {
+    if(partnerable::partner_owner_address(partner) != partner_address) {
       return option::none<NFTCard>()
     };
 
@@ -134,10 +134,11 @@ module loyaltychain::nft {
     card_tier_name: String,
     card_type_name: String,
     receiver: address,
+    partner_address: address,
     partner: &mut Partner,
     ctx: &mut TxContext) {
 
-    let nft_cardable = mint_card(card_tier_name, card_type_name, partner, ctx);
+    let nft_cardable = mint_card(card_tier_name, card_type_name, partner_address, partner, ctx);
 
     let nft_card = option::destroy_some<NFTCard>(nft_cardable);
 
@@ -157,7 +158,13 @@ module loyaltychain::nft {
     event::emit(card_created_event);
   }
 
-  public fun burn_card(card_tier_name: String, card_type_name: String, nft_card: NFTCard, partner: &mut Partner, ctx: &mut TxContext){
+  public fun burn_card(
+    card_tier_name: String,
+    card_type_name: String,
+    nft_card: NFTCard,
+    partner: &mut Partner,
+    ctx: &mut TxContext){
+
     let sender = tx_context::sender(ctx);
     assert!(partnerable::partner_owner_address(partner) == sender, 0);
 
@@ -186,12 +193,22 @@ module loyaltychain::nft {
     event::emit(nft_card_burned_event);
   }
 
-  public fun transfer_card(nft_card: NFTCard, receiver: address) {
+  public fun transfer_card(
+    nft_card: NFTCard,
+    receiver: address) {
     transfer::transfer(nft_card, receiver);
   }
 
-  public fun register_card_tier( name: String, description: String, image_url: String, benefit: u8, partner: &mut Partner, ctx: &mut TxContext): bool{
-    if(partnerable::partner_owner_address(partner) != tx_context::sender(ctx)){
+  public fun register_card_tier(
+    name: String,
+    description: String,
+    image_url: String,
+    benefit: u8,
+    owner_address: address,
+    partner: &mut Partner,
+    ctx: &mut TxContext): bool{
+
+    if(partnerable::partner_owner_address(partner) != owner_address){
       return false
     };
 
@@ -238,11 +255,12 @@ module loyaltychain::nft {
     image_url: String,
     max_supply: u64,
     capped_amount: u64,
+    owner_address: address,
     partner: &mut Partner,
     ctx: &mut TxContext
     ): bool{
 
-    if(partnerable::partner_owner_address(partner) != tx_context::sender(ctx)){
+    if(partnerable::partner_owner_address(partner) != owner_address){
       return false
     };
 

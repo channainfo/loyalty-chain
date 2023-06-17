@@ -61,6 +61,7 @@ module loyaltychain::nft_test {
         tier_description,
         tier_image_url,
         tier_benefit,
+        stranger,
         partner,
         ctx
       );
@@ -81,6 +82,7 @@ module loyaltychain::nft_test {
         tier_description,
         tier_image_url,
         tier_benefit,
+        owner,
         partner,
         ctx
       );
@@ -118,6 +120,7 @@ module loyaltychain::nft_test {
         tier_description,
         tier_image_url,
         tier_benefit,
+        owner,
         partner,
         ctx
       );
@@ -186,6 +189,7 @@ module loyaltychain::nft_test {
         tier_description,
         tier_image_url,
         tier_benefit,
+        owner,
         partner,
         ctx
       );
@@ -214,6 +218,7 @@ module loyaltychain::nft_test {
         type_image_url,
         max_supply,
         capped_amount,
+        stranger,
         partner,
         ctx);
       assert!(result == false, 0);
@@ -234,6 +239,7 @@ module loyaltychain::nft_test {
         type_image_url,
         max_supply,
         capped_amount,
+        owner,
         partner,
         ctx);
       assert!(result == true, 0);
@@ -273,6 +279,7 @@ module loyaltychain::nft_test {
         type_image_url,
         max_supply,
         capped_amount,
+        owner,
         partner,
         ctx);
       assert!(result == false, 0);
@@ -340,6 +347,7 @@ module loyaltychain::nft_test {
         tier_description,
         tier_image_url,
         tier_benefit,
+        owner,
         partner,
         ctx
       );
@@ -366,6 +374,7 @@ module loyaltychain::nft_test {
         type_image_url,
         max_supply,
         capped_amount,
+        owner,
         partner,
         ctx);
       assert!(result == true, 0);
@@ -381,7 +390,7 @@ module loyaltychain::nft_test {
       let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = nft::mint_card(tier_name, type_name, partner, ctx);
+      let nft_cardable: Option<NFTCard> = nft::mint_card(tier_name, type_name, owner, partner, ctx);
 
       assert!(option::is_some<NFTCard>(&nft_cardable) == true, 0);
 
@@ -421,7 +430,7 @@ module loyaltychain::nft_test {
       let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      nft::mint_and_transfer_card( tier_name, type_name, receiver, partner, ctx);
+      nft::mint_and_transfer_card( tier_name, type_name, receiver, owner, partner, ctx);
       test_scenario::return_shared<PartnerBoard>(partner_board);
     };
 

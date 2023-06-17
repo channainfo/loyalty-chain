@@ -80,6 +80,10 @@ module loyaltychain::memberable {
   // It is easy to mock ID than constructing a real CoinMetadata object
   // coin is the coin from your own address
   public fun receive_coin<T>(member: &mut Member, coin: Coin<T>, metadata_id: ID, ctx: &TxContext){
+
+    let sender = tx_context::sender(ctx);
+    assert!(member.owner == sender, 0);
+
     let member_id = object::id(member);
     let amount = coin::value(&coin);
     let received_at = tx_context::epoch(ctx);
@@ -119,16 +123,25 @@ module loyaltychain::memberable {
   }
 
   // transfer to an address and then allow member to claim
-  public fun split_and_transfer_coin<T>(value: u64, sender: &mut Member, receiver_address: address, metadata_id: ID, ctx: &mut TxContext) {
-    let split_coin = split_coin<T>(value, sender, metadata_id, ctx);
+  public fun split_and_transfer_coin<T>(
+    value: u64,
+    member: &mut Member,
+    receiver_address: address,
+    metadata_id: ID,
+    ctx: &mut TxContext) {
 
-    let sender_id = object::id(sender);
+    let sender = tx_context::sender(ctx);
+    assert!(member.owner == sender, 0);
+
+    let split_coin = split_coin<T>(value, member, metadata_id, ctx);
+
+    let member_id = object::id(member);
     let sent_at = tx_context::epoch(ctx);
     transfer::public_transfer(split_coin, receiver_address);
 
     let sent_event = MemberSentCoinEvent {
       metadata_id,
-      sender_id,
+      sender_id: member_id,
       receiver_address,
       amount: value,
       sent_at
@@ -138,6 +151,9 @@ module loyaltychain::memberable {
   }
 
   public fun receive_nft_card(member: &mut Member, nft_card: NFTCard, ctx: &mut TxContext){
+    let sender_address = tx_context::sender(ctx);
+    assert!(member.owner == sender_address, 0);
+
     if(!dynamic_object_field::exists_<vector<u8>>(&member.id, NFT_CARD_KEY)){
 
       let member_nft_card = MemberNFTCard {
@@ -166,7 +182,11 @@ module loyaltychain::memberable {
     nft_card
   }
 
-  public fun take_and_transfer_nft_card(member: &mut Member, nft_card_id: ID, receiver_address: address, ctx: &mut TxContext){
+  public fun take_and_transfer_nft_card(
+    member: &mut Member,
+    nft_card_id: ID,
+    receiver_address: address,
+    ctx: &mut TxContext){
 
     let sender_address = tx_context::sender(ctx);
     assert!(member.owner == sender_address, 0);
@@ -186,10 +206,15 @@ module loyaltychain::memberable {
     event::emit(transfer_event);
   }
 
-  public fun register_member(nick_name: String, email: String, board: &mut MemberBoard, ctx: &mut TxContext): bool {
+  public fun register_member(
+    nick_name: String,
+    email: String,
+    owner: address,
+    board: &mut MemberBoard,
+    ctx: &mut TxContext): bool {
+
     let code: vector<u8> = util::hash_string(&email);
     let created_at = tx_context::epoch(ctx);
-    let owner = tx_context::sender(ctx);
 
     if(dynamic_object_field::exists_<vector<u8>>(&board.id, code)) {
       return false

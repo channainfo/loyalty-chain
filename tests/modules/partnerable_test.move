@@ -180,7 +180,7 @@ module loyaltychain::partnerable_test {
 
       let result = partnerable::register_company(
         company_name, company_code, company_excerpt, company_content,
-        company_logo_url, code, &mut company_board, &mut partner_board, ctx
+        company_logo_url, code, owner, &mut company_board, &mut partner_board, ctx
       );
 
       assert!(result == true, 0);
@@ -232,7 +232,7 @@ module loyaltychain::partnerable_test {
 
       let result = partnerable::register_company(
         company_name, company_code, company_excerpt, company_content,
-        company_logo_url, code, &mut company_board, &mut partner_board, ctx
+        company_logo_url, code, owner, &mut company_board, &mut partner_board, ctx
       );
       // Expect to failed for the existing company
       assert!(result == false, 0);
