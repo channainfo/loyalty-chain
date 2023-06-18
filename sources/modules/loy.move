@@ -19,9 +19,9 @@ module loyaltychain::loy {
     let name = b"LOY";
     let description = b"";
     let icon_url: Option<Url> = option::none();
-    let (treasury_cap, meta_data) = coin::create_currency<LOY>(withness, decimal, symbol, name, description, icon_url, ctx);
+    let (treasury_cap, metadata) = coin::create_currency<LOY>(withness, decimal, symbol, name, description, icon_url, ctx);
 
-    transfer::public_freeze_object(meta_data);
+    transfer::public_freeze_object(metadata);
     transfer::public_transfer(treasury_cap, tx_context::sender(ctx));
   }
 

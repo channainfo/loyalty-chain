@@ -270,10 +270,9 @@ module loyaltychain::main{
   public entry fun member_claim_coin<T>(
     member: &mut Member,
     coin: Coin<T>,
-    metadata_id: ID,
     ctx: &TxContext){
 
-    memberable::receive_coin<T>(member, coin, metadata_id, ctx);
+    memberable::receive_coin<T>(member, coin, ctx);
   }
 
   // self custody member
@@ -281,14 +280,12 @@ module loyaltychain::main{
     value: u64,
     member: &mut Member,
     receiver_address: address,
-    metadata_id: ID,
     ctx: &mut TxContext){
 
     memberable::split_and_transfer_coin<T>(
       value,
       member,
       receiver_address,
-      metadata_id,
       ctx
     );
   }

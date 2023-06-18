@@ -99,10 +99,11 @@ module loyaltychain::memberable_test {
     use sui::test_scenario;
     use sui::coin::{Self, Coin};
     use sui::sui::{SUI};
-    use sui::object;
+
     use loyaltychain::loy::{LOY};
     use loyaltychain::memberable::{Self, MemberBoard};
     use std::string::{Self, String};
+    use std::type_name;
 
     let owner = @0001;
     let email: String = string::utf8(b"admin@loyaltychain.org");
@@ -142,12 +143,14 @@ module loyaltychain::memberable_test {
       let amount_coin3 = coin::mint_for_testing<SUI>(500u64, ctx);
 
       // CoinMetadata#id
-      let metadata_loy = object::id(&amount_coin1);
-      let metadata_sui = object::id(&amount_coin3);
+      // let metadata_loy = object::id(&amount_coin1);
+      // let metadata_sui = object::id(&amount_coin3);
+      let metadata_loy = type_name::into_string(type_name::get<LOY>());
+      let metadata_sui = type_name::into_string(type_name::get<SUI>());
 
-      memberable::receive_coin<LOY>(member, amount_coin1, metadata_loy, ctx);
-      memberable::receive_coin<LOY>(member, amount_coin2, metadata_loy, ctx);
-      memberable::receive_coin<SUI>(member, amount_coin3, metadata_sui, ctx);
+      memberable::receive_coin<LOY>(member, amount_coin1, ctx);
+      memberable::receive_coin<LOY>(member, amount_coin2, ctx);
+      memberable::receive_coin<SUI>(member, amount_coin3, ctx);
 
       test_scenario::return_shared<MemberBoard>(board);
       (metadata_loy, metadata_sui)
@@ -159,8 +162,8 @@ module loyaltychain::memberable_test {
       let board = test_scenario::take_shared(&scenario);
       let member = memberable::borrow_mut_member_by_email(&mut board, &email);
 
-      let coin_loy: &Coin<LOY> = memberable::borrow_coin_by_metadata_id<LOY>(member, metadata_loy);
-      let coin_sui: &Coin<SUI> = memberable::borrow_coin_by_metadata_id<SUI>(member, metadata_sui);
+      let coin_loy: &Coin<LOY> = memberable::borrow_coin_by_coin_type<LOY>(member, metadata_loy);
+      let coin_sui: &Coin<SUI> = memberable::borrow_coin_by_coin_type<SUI>(member, metadata_sui);
 
       assert!(coin::value(coin_loy) == 3000, 0);
       assert!(coin::value(coin_sui) == 500, 0);
@@ -175,10 +178,12 @@ module loyaltychain::memberable_test {
     use sui::test_scenario;
     use sui::coin::{Self, Coin};
     use sui::sui::{SUI};
-    use sui::object;
+
     use loyaltychain::loy::{LOY};
     use loyaltychain::memberable::{Self, MemberBoard};
+
     use std::string::{Self, String};
+    use std::type_name;
 
     let owner = @0001;
     let email: String = string::utf8(b"admin@loyaltychain.org");
@@ -218,12 +223,14 @@ module loyaltychain::memberable_test {
       let amount_coin3 = coin::mint_for_testing<SUI>(500u64, ctx);
 
       // CoinMetadata#id
-      let metadata_loy = object::id(&amount_coin1);
-      let metadata_sui = object::id(&amount_coin3);
+      // let metadata_loy = object::id(&amount_coin1);
+      // let metadata_sui = object::id(&amount_coin3);
+      let metadata_loy = type_name::into_string(type_name::get<LOY>());
+      let metadata_sui = type_name::into_string(type_name::get<SUI>());
 
-      memberable::receive_coin<LOY>(member, amount_coin1, metadata_loy, ctx);
-      memberable::receive_coin<LOY>(member, amount_coin2, metadata_loy, ctx);
-      memberable::receive_coin<SUI>(member, amount_coin3, metadata_sui, ctx);
+      memberable::receive_coin<LOY>(member, amount_coin1, ctx);
+      memberable::receive_coin<LOY>(member, amount_coin2, ctx);
+      memberable::receive_coin<SUI>(member, amount_coin3, ctx);
 
       test_scenario::return_shared<MemberBoard>(board);
       (metadata_loy, metadata_sui)
@@ -236,8 +243,8 @@ module loyaltychain::memberable_test {
       let member = memberable::borrow_mut_member_by_email(&mut board, &email);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let coin_loy: Coin<LOY> = memberable::split_coin<LOY>(1500, member, metadata_loy, ctx);
-      let coin_sui: Coin<SUI> = memberable::split_coin<SUI>(300, member, metadata_sui, ctx);
+      let coin_loy: Coin<LOY> = memberable::split_coin<LOY>(1500, member, ctx);
+      let coin_sui: Coin<SUI> = memberable::split_coin<SUI>(300, member, ctx);
 
       assert!(coin::value(&coin_loy) == 1500, 0);
       assert!(coin::value(&coin_sui) == 300, 0);
@@ -254,8 +261,8 @@ module loyaltychain::memberable_test {
       let board = test_scenario::take_shared(&scenario);
       let member = memberable::borrow_mut_member_by_email(&mut board, &email);
 
-      let coin_loy: &Coin<LOY> = memberable::borrow_coin_by_metadata_id<LOY>(member, metadata_loy);
-      let coin_sui: &Coin<SUI> = memberable::borrow_coin_by_metadata_id<SUI>(member, metadata_sui);
+      let coin_loy: &Coin<LOY> = memberable::borrow_coin_by_coin_type<LOY>(member, metadata_loy);
+      let coin_sui: &Coin<SUI> = memberable::borrow_coin_by_coin_type<SUI>(member, metadata_sui);
 
       assert!(coin::value(coin_loy) == 1500, 0);
       assert!(coin::value(coin_sui) == 200, 0);
@@ -270,12 +277,13 @@ module loyaltychain::memberable_test {
   public fun test_split_and_transfer_coin(){
     use sui::test_scenario;
     use sui::coin::{Self, Coin};
-
     use sui::sui::{SUI};
-    use sui::object;
+
     use loyaltychain::loy::{LOY};
     use loyaltychain::memberable::{Self, MemberBoard};
+
     use std::string::{Self, String};
+    use std::type_name;
 
     let member_address1 = @0001;
     let member_email1: String = string::utf8(b"admin1@loyaltychain.org");
@@ -331,12 +339,14 @@ module loyaltychain::memberable_test {
       let amount_coin3 = coin::mint_for_testing<SUI>(500u64, ctx);
 
       // CoinMetadata#id
-      let metadata_loy = object::id(&amount_coin1);
-      let metadata_sui = object::id(&amount_coin3);
+      // let metadata_loy = object::id(&amount_coin1);
+      // let metadata_sui = object::id(&amount_coin3);
+      let metadata_loy = type_name::into_string(type_name::get<LOY>());
+      let metadata_sui = type_name::into_string(type_name::get<SUI>());
 
-      memberable::receive_coin<LOY>(member1, amount_coin1, metadata_loy, ctx);
-      memberable::receive_coin<LOY>(member1, amount_coin2, metadata_loy, ctx);
-      memberable::receive_coin<SUI>(member1, amount_coin3, metadata_sui, ctx);
+      memberable::receive_coin<LOY>(member1, amount_coin1, ctx);
+      memberable::receive_coin<LOY>(member1, amount_coin2, ctx);
+      memberable::receive_coin<SUI>(member1, amount_coin3, ctx);
 
       test_scenario::return_shared<MemberBoard>(board);
       (metadata_loy, metadata_sui)
@@ -349,8 +359,8 @@ module loyaltychain::memberable_test {
       let member1 = memberable::borrow_mut_member_by_email(&mut board, &member_email1);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      memberable::split_and_transfer_coin<LOY>(1700, member1, member_address2, metadata_loy, ctx);
-      memberable::split_and_transfer_coin<SUI>(100, member1, member_address2, metadata_sui, ctx);
+      memberable::split_and_transfer_coin<LOY>(1700, member1, member_address2, ctx);
+      memberable::split_and_transfer_coin<SUI>(100, member1, member_address2, ctx);
 
       test_scenario::return_shared<MemberBoard>(board);
     };
@@ -361,8 +371,8 @@ module loyaltychain::memberable_test {
       let board = test_scenario::take_shared(&scenario);
       let member1 = memberable::borrow_mut_member_by_email(&mut board, &member_email1);
 
-      let coin_loy: &Coin<LOY> = memberable::borrow_coin_by_metadata_id<LOY>(member1, metadata_loy);
-      let coin_sui: &Coin<SUI> = memberable::borrow_coin_by_metadata_id<SUI>(member1, metadata_sui);
+      let coin_loy: &Coin<LOY> = memberable::borrow_coin_by_coin_type<LOY>(member1, metadata_loy);
+      let coin_sui: &Coin<SUI> = memberable::borrow_coin_by_coin_type<SUI>(member1, metadata_sui);
 
       assert!(coin::value(coin_loy) == 1300, 0);
       assert!(coin::value(coin_sui) == 400, 0);
@@ -384,8 +394,8 @@ module loyaltychain::memberable_test {
       assert!(coin::value(&coin_sui) == 100, 0);
 
       let ctx = test_scenario::ctx(&mut scenario);
-      memberable::receive_coin<LOY>(member2, coin_loy, metadata_loy, ctx);
-      memberable::receive_coin<SUI>(member2, coin_sui, metadata_sui, ctx);
+      memberable::receive_coin<LOY>(member2, coin_loy, ctx);
+      memberable::receive_coin<SUI>(member2, coin_sui, ctx);
       test_scenario::return_shared<MemberBoard>(board);
     };
 
@@ -395,8 +405,8 @@ module loyaltychain::memberable_test {
       let board = test_scenario::take_shared(&scenario);
       let member2 = memberable::borrow_mut_member_by_email(&mut board, &member_email2);
 
-      let coin_loy: &Coin<LOY> = memberable::borrow_coin_by_metadata_id<LOY>(member2, metadata_loy);
-      let coin_sui: &Coin<SUI> = memberable::borrow_coin_by_metadata_id<SUI>(member2, metadata_sui);
+      let coin_loy: &Coin<LOY> = memberable::borrow_coin_by_coin_type<LOY>(member2, metadata_loy);
+      let coin_sui: &Coin<SUI> = memberable::borrow_coin_by_coin_type<SUI>(member2, metadata_sui);
 
       assert!(coin::value(coin_loy) == 1700, 0);
       assert!(coin::value(coin_sui) == 100, 0);
