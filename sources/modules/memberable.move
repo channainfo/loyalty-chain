@@ -7,6 +7,8 @@ module loyaltychain::memberable {
   use sui::coin::{Self, Coin};
 
   use std::string::{String};
+  use std::type_name;
+
   use loyaltychain::util::{Self};
   use loyaltychain::nft::{NFTCard};
 
@@ -29,7 +31,7 @@ module loyaltychain::memberable {
   }
 
   struct MemberReceivedCoinEvent has copy, drop {
-    metadata_id: ID,
+    coin_type: std::ascii::String,
     member_id: ID,
     amount: u64,
     from_amount: u64,
@@ -38,7 +40,7 @@ module loyaltychain::memberable {
   }
 
   struct MemberSentCoinEvent has copy, drop {
-    metadata_id: ID,
+    coin_type: std::ascii::String,
     sender_id: ID,
     receiver_address: address,
     amount: u64,
@@ -75,11 +77,7 @@ module loyaltychain::memberable {
     transfer::public_share_object(board);
   }
 
-  // make sure metadata_id: ID is the id of the CoinMetadata from the client
-  // eq: metadata: &CoinMatadata and metadata_id: object::id(metadata)
-  // It is easy to mock ID than constructing a real CoinMetadata object
-  // coin is the coin from your own address
-  public fun receive_coin<T>(member: &mut Member, coin: Coin<T>, metadata_id: ID, ctx: &TxContext){
+  public fun receive_coin<T>(member: &mut Member, coin: Coin<T>, ctx: &TxContext){
 
     let sender = tx_context::sender(ctx);
     assert!(member.owner == sender, 0);
@@ -87,19 +85,20 @@ module loyaltychain::memberable {
     let member_id = object::id(member);
     let amount = coin::value(&coin);
     let received_at = tx_context::epoch(ctx);
+    let coin_type = type_name::into_string(type_name::get<T>());
 
-    let from_amount = if(dynamic_object_field::exists_<ID>(&member.id, metadata_id)) {
-      let existing_coin = dynamic_object_field::borrow_mut<ID, Coin<T>>(&mut member.id, metadata_id);
+    let from_amount = if(dynamic_object_field::exists_(&member.id, coin_type)) {
+      let existing_coin = dynamic_object_field::borrow_mut(&mut member.id, coin_type);
       coin::join(existing_coin, coin);
       coin::value(existing_coin)
     }else {
-      dynamic_object_field::add<ID, Coin<T>>(&mut member.id, metadata_id, coin);
+      dynamic_object_field::add(&mut member.id, coin_type, coin);
       0u64
     };
 
     let to_amount = from_amount + amount;
     let received_coin_event = MemberReceivedCoinEvent {
-      metadata_id,
+      coin_type,
       member_id,
       amount,
       from_amount,
@@ -110,13 +109,14 @@ module loyaltychain::memberable {
     event::emit(received_coin_event);
   }
 
-  public fun split_coin<T>(value: u64, member: &mut Member, metadata_id: ID, ctx: &mut TxContext): Coin<T>{
+  public fun split_coin<T>(value: u64, member: &mut Member, ctx: &mut TxContext): Coin<T>{
     assert!(member.owner == tx_context::sender(ctx), 0);
 
-    let coin_exist = dynamic_object_field::exists_<ID>(&member.id, metadata_id);
+    let coin_type = type_name::into_string(type_name::get<T>());
+    let coin_exist = dynamic_object_field::exists_(&member.id, coin_type);
     assert!(coin_exist, 0);
 
-    let whole_coin = dynamic_object_field::borrow_mut(&mut member.id, metadata_id);
+    let whole_coin = dynamic_object_field::borrow_mut(&mut member.id, coin_type);
     let split_coin = coin::split<T>(whole_coin, value, ctx);
 
     split_coin
@@ -127,20 +127,20 @@ module loyaltychain::memberable {
     value: u64,
     member: &mut Member,
     receiver_address: address,
-    metadata_id: ID,
     ctx: &mut TxContext) {
 
     let sender = tx_context::sender(ctx);
     assert!(member.owner == sender, 0);
 
-    let split_coin = split_coin<T>(value, member, metadata_id, ctx);
+    let split_coin = split_coin<T>(value, member, ctx);
 
     let member_id = object::id(member);
     let sent_at = tx_context::epoch(ctx);
     transfer::public_transfer(split_coin, receiver_address);
+    let coin_type = type_name::into_string(type_name::get<T>());
 
     let sent_event = MemberSentCoinEvent {
-      metadata_id,
+      coin_type,
       sender_id: member_id,
       receiver_address,
       amount: value,
@@ -273,13 +273,13 @@ module loyaltychain::memberable {
     dynamic_object_field::borrow_mut<vector<u8>, Member>(&mut board.id, code)
   }
 
-  public fun borrow_coin_by_metadata_id<T>(member: &Member, metadata_id: ID): &Coin<T> {
-    let existing_coin = dynamic_object_field::borrow<ID, Coin<T>>(& member.id, metadata_id);
+  public fun borrow_coin_by_coin_type<T>(member: &Member, coin_type: std::ascii::String): &Coin<T> {
+    let existing_coin = dynamic_object_field::borrow(& member.id, coin_type);
     existing_coin
   }
 
-  public fun borrow_mut_coin_by_metadata_id<T>(member: &mut Member, metadata_id: ID): &mut Coin<T> {
-    let existing_coin = dynamic_object_field::borrow_mut<ID, Coin<T>>(&mut member.id, metadata_id);
+  public fun borrow_mut_coin_by_coin_type<T>(member: &mut Member, coin_type: std::ascii::String): &mut Coin<T> {
+    let existing_coin = dynamic_object_field::borrow_mut(&mut member.id, coin_type);
     existing_coin
   }
 
