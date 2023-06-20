@@ -63,6 +63,7 @@ module loyaltychain::nft {
 
   struct NFTCard has key, store {
     id: UID,
+    partner_id: ID,
     card_tier_id: ID,
     card_type_id: ID,
     issued_number: u64,
@@ -71,6 +72,7 @@ module loyaltychain::nft {
 
   struct NFTCardCreatedEvent has copy, drop {
     card_id: ID,
+    partner_id: ID,
     card_tier_id: ID,
     card_tier_name: String,
     card_type_id: ID,
@@ -82,6 +84,7 @@ module loyaltychain::nft {
 
   struct NFTCardBurnedEvent has copy, drop {
     card_id: ID,
+    partner_id: ID,
     card_tier_id: ID,
     card_tier_name: String,
     card_type_id: ID,
@@ -97,6 +100,8 @@ module loyaltychain::nft {
     partner_address: address,
     partner: &mut Partner,
     ctx: &mut TxContext): Option<NFTCard>{
+
+    let partner_id = object::id(partner);
 
     // assert!(partnerable::partner_owner_address(partner) == sender, 0);
     if(partnerable::partner_owner_address(partner) != partner_address) {
@@ -118,6 +123,7 @@ module loyaltychain::nft {
 
     let nft_card = NFTCard {
       id: object::new(ctx),
+      partner_id,
       card_tier_id,
       card_type_id,
       issued_number,
@@ -143,8 +149,11 @@ module loyaltychain::nft {
     let nft_card = option::destroy_some<NFTCard>(nft_cardable);
 
     let card_id = object::id(&nft_card);
+    let partner_id = object::id(partner);
+
     let card_created_event = NFTCardCreatedEvent {
       card_id,
+      partner_id,
       card_tier_id: nft_card.card_tier_id,
       card_tier_name,
       card_type_id: nft_card.card_type_id,
@@ -176,12 +185,13 @@ module loyaltychain::nft {
     };
 
     let card_id = object::id(&nft_card);
-    let NFTCard { id, card_tier_id, card_type_id, issued_number, issued_at } = nft_card;
+    let NFTCard { id, partner_id, card_tier_id, card_type_id, issued_number, issued_at } = nft_card;
     object::delete(id);
 
     let burned_at = tx_context::epoch(ctx);
     let nft_card_burned_event = NFTCardBurnedEvent {
       card_id,
+      partner_id,
       card_tier_id,
       card_tier_name,
       card_type_id,
