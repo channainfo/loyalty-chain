@@ -495,4 +495,5 @@ module loyaltychain::nft_test {
 
     test_scenario::end(scenario);
   }
+
 }

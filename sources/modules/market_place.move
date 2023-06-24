@@ -16,6 +16,12 @@ module loyaltychain::market_place {
     items_count: u64,
   }
 
+  struct ItemForTest has key, store {
+    id: UID,
+    value: u64,
+
+  }
+
   struct Listing<T, phantom Token> has key, store {
     id: UID,
     value: u64,
@@ -31,14 +37,14 @@ module loyaltychain::market_place {
   }
 
   public fun create_market_place<Token>(board: &mut MarketPlaceBoard, ctx: &mut TxContext): bool {
-    let type = type_name::get<Token>();
+    let type = type_name::into_string(type_name::get<Token>());
     if(dynamic_object_field::exists_(&board.id, type)){
       return false
     };
 
     let market_place = MarketPlace<Token> {
       id: object::new(ctx),
-      items_count: 064,
+      items_count: 0u64,
     };
     dynamic_object_field::add(&mut board.id, type, market_place);
 
@@ -94,8 +100,34 @@ module loyaltychain::market_place {
     object::delete(id);
     market_place.items_count = market_place.items_count - 1;
 
-    transfer::transfer(item, sender);
+    transfer::public_transfer(item, sender);
     transfer::public_transfer(value, owner);
+
   }
 
+  public fun market_place_items_count<Token>(market_place: &MarketPlace<Token>): u64 {
+    market_place.items_count
+  }
+
+  public fun borrow_mut_market_place_t_token<Token>(board: &mut MarketPlaceBoard): &mut MarketPlace<Token> {
+    let type = type_name::into_string(type_name::get<Token>());
+
+    dynamic_object_field::borrow_mut<std::ascii::String, MarketPlace<Token>>(&mut board.id, type)
+  }
+
+  #[test_only]
+  public fun create_and_transfer_item_for_test(ctx: &mut TxContext) {
+    let item = ItemForTest {
+      id: object::new(ctx),
+      value: 3000
+    };
+
+    let sender = tx_context::sender(ctx);
+    transfer::public_transfer(item, sender);
+  }
+
+  #[test_only]
+  public fun item_value_for_test(item: &ItemForTest): u64 {
+    item.value
+  }
 }
