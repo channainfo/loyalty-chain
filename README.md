@@ -96,3 +96,4 @@ Required the admin cap
 - SUI Sample code: <https://github.com/MystenLabs/sui/tree/main/sui_programmability/examples/nfts>
 - Time: <https://docs.sui.io/build/move/time>
 - Test: <https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test/test_scenario.move#L209>
+- Best practises: <https://docs.sui.io/testnet/build/dev_cheat_sheet>
