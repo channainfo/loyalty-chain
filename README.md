@@ -1,6 +1,6 @@
 # Getting started with Loyalty Chain
 
-LOY Is the native token. Checkout our white paper: <https://github.com/channainfo/loyalty-chain/blob/master/docs/whitepaper.md>
+**LOY** is the native token. Checkout our white paper: <https://github.com/channainfo/loyalty-chain/blob/master/docs/whitepaper.md>
 
 Run test
 
@@ -12,35 +12,35 @@ sui move test
 
 ### Implemented
 
-- AdminCap
-- Partner (name, code, excerpt, content, logo, is_public, token_name, owner_address, companies_count)
-- Company( name, code, excerpt, content, logo_url, is_public, members_count, owner_address, partner_id )
-- Member( code, owner_address, first_name, last_name, nickname, [companies], [coins])
+```plaintext
+- AdminCap[]
+- Partner: [name, code, excerpt, content, logo, is_public, token_name, owner_address, companies_count]
+- Company: [name, code, excerpt, content, logo_url, is_public, members_count, owner_address, partner_id]
+- Member: [code, owner_address, first_name, last_name, nickname]
+- LOY Token: [LOY]
+- NFTCardTier: [name, description, image_url, benefit, partner_id]
+- NFTCardType: [name, image_url, max_supply, current_supply, current_issued_number, benefit, capped_amount, card_tier_id, partner_id]
+- NFTCard: [card_tier_id, card_type_id, issued_number, issued_at]
+```
 
-- LOY token
-- NFTCardTier(name, description, image_url, benefit, partner_id)
-- NFTCardType(name, image_url, max_supply, current_supply, current_issued_number, benefit, capped_amount, card_tier_id, partner_id)
-- NFTCard(card_tier_id, card_type_id, issued_number, issued_at)
+### Use Cases
 
-### Usecases
+- Membership card ( Benefit will be aggregate to the account owner)
+- Voucher ( Self contain product exchange directly for products or services )
 
-#### Point System
+#### Membership Card
 
-Issue an nft card with a type of "point", everytime a customer makes a purchase, a certain number of points will be minted and transfer to the customer.
+1. **Point System Card:** Issue an nft card with a type of "point", everytime a customer makes a purchase, a certain number of points will be minted and transfer to the customer.
 
-#### Discount Card
+2. **Discount Card:** Issue an nft card with a type "disccount", everytime a customer make a purchase, the customer will get a disount amount.
 
-Issue an nft card with a type "disccount", everytime a customer make a purchase, check the data onchain to get the discount.
-
-#### Loyalty
-
-Issue an nft card with a type "loyalty", everytime a customer purchase increase, increase an activity count and upgrade the tier accordingly.
+3. **Loyalty Card:** Issue an nft card with a type "loyalty", everytime a customer make a purchase, a certain number of points will be minted ( based on tier) and transfer to the customer. If the point reach the tier, upgrade the tier the customer tier accordingly.
 
 #### Voucher
 
-Issue an nft card with a type of "vouchers", everytime users use the service, burn a number of point from the voucher.
+1. **Claim For Service:** Issue an nft card with a type of "vouchers", everytime users use the service or exchange for a product, burn a number of point from the voucher(self-contained).
 
-## Interoperability
+## Interoperabilities
 
 - Presale
 - Swap
@@ -48,7 +48,7 @@ Issue an nft card with a type of "vouchers", everytime users use the service, bu
 - Auction
 - Marketplace
 
-## Activity On-chain
+## Activities On Chain
 
 ### Initialization
 
@@ -89,11 +89,13 @@ Required the admin cap
 
 ### SUI
 
-- The move lang stdlib: <https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/move-stdlib/sources>
-- The move lang ref: <https://github.com/move-language/move/tree/main/language/documentation/book/src>
-- Framework: <https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/dynamic_object_field.move>
-- SUI Example: <https://examples.sui.io/basics/events.html>
-- SUI Sample code: <https://github.com/MystenLabs/sui/tree/main/sui_programmability/examples/nfts>
-- Time: <https://docs.sui.io/build/move/time>
-- Test: <https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test/test_scenario.move#L209>
-- Best practises: <https://docs.sui.io/testnet/build/dev_cheat_sheet>
+- Move Std: <https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/move-stdlib/sources>
+- Move Lang Ref: <https://github.com/move-language/move/tree/main/language/documentation/book/src>
+- SUI Framework: <https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/dynamic_object_field.move>
+- SUI Sample Code: <https://github.com/MystenLabs/sui/tree/main/sui_programmability/examples/nfts>
+- Test SUI Framework: <https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test/test_scenario.move#L209>
+- Best Practises: <https://docs.sui.io/testnet/build/dev_cheat_sheet>
+
+### Awesome Move
+
+- Awesome: <https://medium.com/@fidika/aptos-vs-sui-detailed-dev-comparison-5d24df53eee8>
