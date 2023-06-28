@@ -16,11 +16,11 @@ sui move test
 - AdminCap[]
 - Partner: [name, code, excerpt, content, logo, is_public, token_name, owner_address, companies_count]
 - Company: [name, code, excerpt, content, logo_url, is_public, members_count, owner_address, partner_id]
-- Member: [code, owner_address, first_name, last_name, nickname]
+- Member: [code, owner_address, first_name, last_name, nick_name]
 - LOY Token: [LOY]
 - NFTCardTier: [name, description, image_url, benefit, partner_id]
-- NFTCardType: [name, image_url, max_supply, current_supply, current_issued_number, benefit, capped_amount, card_tier_id, partner_id]
-- NFTCard: [card_tier_id, card_type_id, issued_number, issued_at]
+- NFTCardType: [name, image_url, max_supply, current_supply, current_issued_number, card_tier_id, partner_id]
+- NFTCard: [card_tier_id, card_type_id, issued_number, issued_at, benefit, accumulated_value]
 ```
 
 ### Use Cases
