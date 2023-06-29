@@ -53,4 +53,52 @@ module loyaltychain::util_test {
     };
 
   }
+
+  #[test]
+  public fun test_get_name_as_bytes(){
+    use loyaltychain::util;
+    use loyaltychain::loy::{LOY};
+
+    let expected = b"LOY";
+    let result = util::get_name_as_bytes<LOY>();
+
+    assert!(result == expected, 0);
+  }
+
+  #[test]
+  public fun test_get_name_as_string(){
+    use loyaltychain::util;
+    use loyaltychain::loy::{LOY};
+
+    let expected = string::utf8(b"LOY");
+    let result = util::get_name_as_string<LOY>();
+
+    assert!(result == expected, 0);
+  }
+
+  #[test]
+  public fun test_get_type_from_bytes(){
+    use loyaltychain::util;
+
+    // it returns LOY without fully qualified name
+    {
+      let expected = b"LOY";
+      let value = b"00000000000000000000000000000000::loyaltychain::loy::LOY";
+
+      let result = util::get_type_from_bytes(value);
+      std::debug::print(&string::utf8(result));
+      assert!(result == expected, 0);
+    };
+
+    // it returns LOY
+    {
+      let expected = b"LOY";
+      let value = b"LOY";
+
+      let result = util::get_type_from_bytes(value);
+      std::debug::print(&string::utf8(result));
+      assert!(result == expected, 0);
+    };
+
+  }
 }

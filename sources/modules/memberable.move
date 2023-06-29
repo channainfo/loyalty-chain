@@ -7,10 +7,9 @@ module loyaltychain::memberable {
   use sui::coin::{Self, Coin};
 
   use std::string::{String};
-  use std::type_name;
 
   use loyaltychain::util::{Self};
-  use loyaltychain::nft::{NFTCard};
+  use loyaltychain::nft::{ NFTCard};
 
   const NFT_CARD_KEY: vector<u8> = b"nft_cards";
 
@@ -31,7 +30,7 @@ module loyaltychain::memberable {
   }
 
   struct MemberReceivedCoinEvent has copy, drop {
-    coin_type: std::ascii::String,
+    coin_type: vector<u8>,
     member_id: ID,
     amount: u64,
     from_amount: u64,
@@ -40,7 +39,7 @@ module loyaltychain::memberable {
   }
 
   struct MemberSentCoinEvent has copy, drop {
-    coin_type: std::ascii::String,
+    coin_type: vector<u8>,
     sender_id: ID,
     receiver_address: address,
     amount: u64,
@@ -68,6 +67,13 @@ module loyaltychain::memberable {
     created_at: u64
   }
 
+  struct MemberCompletedOrderEvent has copy, drop {
+    order_id: String,
+    token_earn: u64,
+    owner: address,
+    created_at: u64
+  }
+
   public fun init_create_member_board(ctx: &mut TxContext) {
     let board = MemberBoard {
       id: object::new(ctx),
@@ -79,13 +85,10 @@ module loyaltychain::memberable {
 
   public fun receive_coin<T>(member: &mut Member, coin: Coin<T>, ctx: &TxContext){
 
-    let sender = tx_context::sender(ctx);
-    assert!(member.owner == sender, 0);
-
     let member_id = object::id(member);
     let amount = coin::value(&coin);
     let received_at = tx_context::epoch(ctx);
-    let coin_type = type_name::into_string(type_name::get<T>());
+    let coin_type = util::get_name_as_bytes<T>();
 
     let from_amount = if(dynamic_object_field::exists_(&member.id, coin_type)) {
       let existing_coin = dynamic_object_field::borrow_mut(&mut member.id, coin_type);
@@ -112,7 +115,7 @@ module loyaltychain::memberable {
   public fun split_coin<T>(value: u64, member: &mut Member, ctx: &mut TxContext): Coin<T>{
     assert!(member.owner == tx_context::sender(ctx), 0);
 
-    let coin_type = type_name::into_string(type_name::get<T>());
+    let coin_type = util::get_name_as_bytes<T>();
     let coin_exist = dynamic_object_field::exists_(&member.id, coin_type);
     assert!(coin_exist, 0);
 
@@ -137,7 +140,7 @@ module loyaltychain::memberable {
     let member_id = object::id(member);
     let sent_at = tx_context::epoch(ctx);
     transfer::public_transfer(split_coin, receiver_address);
-    let coin_type = type_name::into_string(type_name::get<T>());
+    let coin_type = util::get_name_as_bytes<T>();
 
     let sent_event = MemberSentCoinEvent {
       coin_type,
@@ -273,12 +276,12 @@ module loyaltychain::memberable {
     dynamic_object_field::borrow_mut<vector<u8>, Member>(&mut board.id, code)
   }
 
-  public fun borrow_coin_by_coin_type<T>(member: &Member, coin_type: std::ascii::String): &Coin<T> {
+  public fun borrow_coin_by_coin_type<T>(member: &Member, coin_type: vector<u8>): &Coin<T> {
     let existing_coin = dynamic_object_field::borrow(& member.id, coin_type);
     existing_coin
   }
 
-  public fun borrow_mut_coin_by_coin_type<T>(member: &mut Member, coin_type: std::ascii::String): &mut Coin<T> {
+  public fun borrow_mut_coin_by_coin_type<T>(member: &mut Member, coin_type: vector<u8>): &mut Coin<T> {
     let existing_coin = dynamic_object_field::borrow_mut(&mut member.id, coin_type);
     existing_coin
   }
@@ -286,5 +289,10 @@ module loyaltychain::memberable {
   public fun borrow_nft_card_by_id(member: &Member, nft_card_id: ID): &NFTCard {
     let member_nft_card = dynamic_object_field::borrow<vector<u8>, MemberNFTCard>(&member.id, NFT_CARD_KEY);
     dynamic_object_field::borrow<ID, NFTCard>(&member_nft_card.id, nft_card_id)
+  }
+
+  public fun borrow_mut_nft_card_by_id(member: &mut Member, nft_card_id: ID): &mut NFTCard {
+    let member_nft_card = dynamic_object_field::borrow_mut<vector<u8>, MemberNFTCard>(&mut member.id, NFT_CARD_KEY);
+    dynamic_object_field::borrow_mut<ID, NFTCard>(&mut member_nft_card.id, nft_card_id)
   }
 }

@@ -102,8 +102,8 @@ module loyaltychain::memberable_test {
 
     use loyaltychain::loy::{LOY};
     use loyaltychain::memberable::{Self, MemberBoard};
+    use loyaltychain::util;
     use std::string::{Self, String};
-    use std::type_name;
 
     let owner = @0001;
     let email: String = string::utf8(b"admin@loyaltychain.org");
@@ -145,8 +145,8 @@ module loyaltychain::memberable_test {
       // CoinMetadata#id
       // let metadata_loy = object::id(&amount_coin1);
       // let metadata_sui = object::id(&amount_coin3);
-      let metadata_loy = type_name::into_string(type_name::get<LOY>());
-      let metadata_sui = type_name::into_string(type_name::get<SUI>());
+      let metadata_loy = util::get_name_as_bytes<LOY>();
+      let metadata_sui = util::get_name_as_bytes<SUI>();
 
       memberable::receive_coin<LOY>(member, amount_coin1, ctx);
       memberable::receive_coin<LOY>(member, amount_coin2, ctx);
@@ -180,10 +180,10 @@ module loyaltychain::memberable_test {
     use sui::sui::{SUI};
 
     use loyaltychain::loy::{LOY};
+    use loyaltychain::util;
     use loyaltychain::memberable::{Self, MemberBoard};
 
     use std::string::{Self, String};
-    use std::type_name;
 
     let owner = @0001;
     let email: String = string::utf8(b"admin@loyaltychain.org");
@@ -225,8 +225,8 @@ module loyaltychain::memberable_test {
       // CoinMetadata#id
       // let metadata_loy = object::id(&amount_coin1);
       // let metadata_sui = object::id(&amount_coin3);
-      let metadata_loy = type_name::into_string(type_name::get<LOY>());
-      let metadata_sui = type_name::into_string(type_name::get<SUI>());
+      let metadata_loy = util::get_name_as_bytes<LOY>();
+      let metadata_sui = util::get_name_as_bytes<SUI>();
 
       memberable::receive_coin<LOY>(member, amount_coin1, ctx);
       memberable::receive_coin<LOY>(member, amount_coin2, ctx);
@@ -280,10 +280,10 @@ module loyaltychain::memberable_test {
     use sui::sui::{SUI};
 
     use loyaltychain::loy::{LOY};
+    use loyaltychain::util;
     use loyaltychain::memberable::{Self, MemberBoard};
 
     use std::string::{Self, String};
-    use std::type_name;
 
     let member_address1 = @0001;
     let member_email1: String = string::utf8(b"admin1@loyaltychain.org");
@@ -341,8 +341,8 @@ module loyaltychain::memberable_test {
       // CoinMetadata#id
       // let metadata_loy = object::id(&amount_coin1);
       // let metadata_sui = object::id(&amount_coin3);
-      let metadata_loy = type_name::into_string(type_name::get<LOY>());
-      let metadata_sui = type_name::into_string(type_name::get<SUI>());
+      let metadata_loy = util::get_name_as_bytes<LOY>();
+      let metadata_sui = util::get_name_as_bytes<SUI>();
 
       memberable::receive_coin<LOY>(member1, amount_coin1, ctx);
       memberable::receive_coin<LOY>(member1, amount_coin2, ctx);

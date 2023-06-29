@@ -5,7 +5,7 @@ module loyaltychain::market_place {
   use sui::dynamic_object_field;
   use sui::coin::{Self, Coin};
 
-  use std::type_name;
+  use loyaltychain::util;
 
   struct MarketPlaceBoard has key, store {
     id: UID,
@@ -37,7 +37,7 @@ module loyaltychain::market_place {
   }
 
   public fun create_market_place<Token>(board: &mut MarketPlaceBoard, ctx: &mut TxContext): bool {
-    let type = type_name::into_string(type_name::get<Token>());
+    let type = util::get_name_as_bytes<Token>();
     if(dynamic_object_field::exists_(&board.id, type)){
       return false
     };
@@ -110,9 +110,9 @@ module loyaltychain::market_place {
   }
 
   public fun borrow_mut_market_place_t_token<Token>(board: &mut MarketPlaceBoard): &mut MarketPlace<Token> {
-    let type = type_name::into_string(type_name::get<Token>());
+    let type = util::get_name_as_bytes<Token>();
 
-    dynamic_object_field::borrow_mut<std::ascii::String, MarketPlace<Token>>(&mut board.id, type)
+    dynamic_object_field::borrow_mut<vector<u8>, MarketPlace<Token>>(&mut board.id, type)
   }
 
   #[test_only]
