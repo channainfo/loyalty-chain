@@ -1,6 +1,6 @@
 module loyaltychain::loy {
   use sui::tx_context::{Self, TxContext};
-  use sui::coin::{Self, Coin, TreasuryCap};
+  use sui::coin::{Self,};
   use sui::transfer;
 
   use std::option::{Self, Option};
@@ -25,28 +25,13 @@ module loyaltychain::loy {
     transfer::public_transfer(treasury_cap, tx_context::sender(ctx));
   }
 
-  public fun mint(treasury_cap: &mut TreasuryCap<LOY>, amount: u64, recipient: address, ctx: &mut TxContext) {
-    coin::mint_and_transfer(treasury_cap, amount, recipient, ctx);
-  }
-
-  public fun mint_and_merge(treasury_cap: &mut TreasuryCap<LOY>, amount: u64, coin: &mut Coin<LOY>, ctx: &mut TxContext){
-    let minted_coin: Coin<LOY> = coin::mint<LOY>(treasury_cap, amount, ctx);
-    coin::join<LOY>(coin, minted_coin);
-  }
-
-  public fun mint_and_join(treasury_cap: &mut TreasuryCap<LOY>, amount: u64, coin: &mut Coin<LOY>, ctx: &mut TxContext){
-    mint_and_merge(treasury_cap, amount, coin, ctx);
-  }
-
-  public fun burn(treasury_cap: &mut TreasuryCap<LOY>, coin: Coin<LOY>){
-    coin::burn(treasury_cap, coin);
-  }
-
   #[test]
   public fun test_init(){
     use sui::test_scenario;
-    use loyaltychain::loy::{Self, LOY};
     use sui::coin::{Self, TreasuryCap, Coin};
+
+    use loyaltychain::loy::{LOY};
+    use loyaltychain::token_managable;
 
     let owner = @0x0001;
     let owner_amount_minted = 5_000u64;
@@ -70,11 +55,11 @@ module loyaltychain::loy {
       let ctx = test_scenario::ctx(&mut scenario);
 
       // mint amount: owner_amount_minted 2 times and transfer to owner
-      loy::mint(&mut treasury_cap, owner_amount_minted, address, ctx);
-      loy::mint(&mut treasury_cap, owner_amount_minted, address, ctx);
+      token_managable::mint(&mut treasury_cap, owner_amount_minted, address, ctx);
+      token_managable::mint(&mut treasury_cap, owner_amount_minted, address, ctx);
 
       // mint amount: receiver_amount_mited and transfer to receiver
-      loy::mint(&mut treasury_cap, receiver_amount_mited, receiver, ctx);
+      token_managable::mint(&mut treasury_cap, receiver_amount_mited, receiver, ctx);
 
       test_scenario::return_to_sender(&scenario, treasury_cap);
     };
@@ -108,7 +93,7 @@ module loyaltychain::loy {
       let ctx = test_scenario::ctx(&mut scenario);
       let portion = coin::take<LOY>(owner_balance, amount_burned, ctx);
 
-      loyaltychain::loy::burn(&mut treasury_cap, portion);
+      loyaltychain::token_managable::burn(&mut treasury_cap, portion);
 
       test_scenario::return_to_sender<Coin<LOY>>(&scenario, owner_coin);
       test_scenario::return_to_sender<TreasuryCap<LOY>>(&scenario, treasury_cap);
@@ -147,7 +132,7 @@ module loyaltychain::loy {
       let treasury_cap = test_scenario::take_from_sender<TreasuryCap<LOY>>(&scenario);
 
       let ctx = test_scenario::ctx(&mut scenario);
-      loy::mint_and_merge(&mut treasury_cap, owner_amount_minted, &mut owner_coin, ctx);
+      token_managable::mint_and_merge(&mut treasury_cap, owner_amount_minted, &mut owner_coin, ctx);
 
       let total_coin = owner_amount_minted + owner_amount_minted + (owner_amount_minted - amount_burned) ;
       assert!(coin::value(&owner_coin) == total_coin, 0);
