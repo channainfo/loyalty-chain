@@ -143,7 +143,9 @@ module loyaltychain::main{
     name: String,
     description: String,
     image_url: String,
-    benefit: u8,
+    benefit: u64,
+    level: u8,
+    required_value: u64,
     partner_address: address,
     partner: &mut Partner,
     ctx: &mut TxContext){
@@ -153,6 +155,8 @@ module loyaltychain::main{
       description,
       image_url,
       benefit,
+      level,
+      required_value,
       partner_address,
       partner,
       ctx
@@ -164,7 +168,9 @@ module loyaltychain::main{
     name: String,
     description: String,
     image_url: String,
-    benefit: u8,
+    benefit: u64,
+    level: u8,
+    required_value: u64,
     partner: &mut Partner,
     ctx: &mut TxContext){
 
@@ -174,6 +180,8 @@ module loyaltychain::main{
       description,
       image_url,
       benefit,
+      level,
+      required_value,
       partner_address,
       partner,
       ctx
@@ -187,7 +195,6 @@ module loyaltychain::main{
     card_tier_name: String,
     image_url: String,
     max_supply: u64,
-    capped_amount: u64,
     owner_address: address,
     partner: &mut Partner,
     ctx: &mut TxContext){
@@ -197,7 +204,6 @@ module loyaltychain::main{
       card_tier_name,
       image_url,
       max_supply,
-      capped_amount,
       owner_address,
       partner,
       ctx
@@ -210,7 +216,6 @@ module loyaltychain::main{
     card_tier_name: String,
     image_url: String,
     max_supply: u64,
-    capped_amount: u64,
     partner: &mut Partner,
     ctx: &mut TxContext){
 
@@ -220,7 +225,6 @@ module loyaltychain::main{
       card_tier_name,
       image_url,
       max_supply,
-      capped_amount,
       owner_address,
       partner,
       ctx

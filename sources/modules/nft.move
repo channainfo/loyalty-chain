@@ -14,26 +14,22 @@ module loyaltychain::nft {
 
   const ERROR_NOT_OWNER: u8 = 0;
 
+  // const LOGIC_TYPE: u8 = 1;
+
+  // Define NFTCardTier benefit and level, required
   struct NFTCardTier has key, store {
     id: UID,
     name: String,
     description: String,
     image_url: Option<Url>,
-    benefit: u8,
+    benefit: u64,
+    required_value: u64,
+    level: u8,
     partner_id: ID,
     published_at: u64
   }
 
-  struct NFTCardTierCreatedEvent has copy, drop {
-    card_tier_id: ID,
-    name: String,
-    description: String,
-    image_url: Option<Url>,
-    benefit: u8,
-    partner_id: ID,
-    published_at: u64
-  }
-
+  // CardType based on a CardTier with issued amount
   struct NFTCardType has key, store {
     id: UID,
     partner_id: ID,
@@ -43,21 +39,6 @@ module loyaltychain::nft {
     max_supply: u64,
     current_supply: u64,
     current_issued_nunber: u64,
-    benefit: u8,
-    capped_amount: u64,
-    published_at: u64,
-  }
-
-  struct NFTCardTypeCreatedEvent has drop, copy {
-    card_type_id: ID,
-    partner_id: ID,
-    card_tier_id: ID,
-    name: String,
-    image_url: Option<Url>,
-    max_supply: u64,
-    current_supply: u64,
-    benefit: u8,
-    capped_amount: u64,
     published_at: u64,
   }
 
@@ -68,6 +49,30 @@ module loyaltychain::nft {
     card_type_id: ID,
     issued_number: u64,
     issued_at: u64,
+    accumulated_value: u64,
+    benefit: u64
+  }
+
+  struct NFTCardTierCreatedEvent has copy, drop {
+    card_tier_id: ID,
+    name: String,
+    description: String,
+    image_url: Option<Url>,
+    benefit: u64,
+    required_value: u64,
+    partner_id: ID,
+    published_at: u64
+  }
+
+  struct NFTCardTypeCreatedEvent has drop, copy {
+    card_type_id: ID,
+    partner_id: ID,
+    card_tier_id: ID,
+    name: String,
+    image_url: Option<Url>,
+    max_supply: u64,
+    current_supply: u64,
+    published_at: u64,
   }
 
   struct NFTCardCreatedEvent has copy, drop {
@@ -78,7 +83,17 @@ module loyaltychain::nft {
     card_type_id: ID,
     card_type_name: String,
     issued_number: u64,
-    owner: address,
+    benefit: u64,
+    issued_at: u64,
+  }
+
+  struct NFTCardReceivedEvent has copy, drop {
+    card_id: ID,
+    partner_id: ID,
+    card_tier_id: ID,
+    card_type_id: ID,
+    issued_number: u64,
+    benefit: u64,
     issued_at: u64,
   }
 
@@ -90,6 +105,8 @@ module loyaltychain::nft {
     card_type_id: ID,
     card_type_name: String,
     issued_number: u64,
+    accumulated_value: u64,
+    benefit: u64,
     issued_at: u64,
     burned_at: u64
   }
@@ -110,6 +127,7 @@ module loyaltychain::nft {
 
     let mut_card_tier = borrow_mut_card_tier_by_name(card_tier_name, partner);
     let card_tier_id = object::id(mut_card_tier);
+    let benefit = mut_card_tier.benefit;
 
     let mut_card_type = borrow_mut_card_type_by_name(card_type_name, mut_card_tier);
     let card_type_id = object::id(mut_card_type);
@@ -127,11 +145,30 @@ module loyaltychain::nft {
       card_tier_id,
       card_type_id,
       issued_number,
+      accumulated_value: 0u64,
       issued_at,
+      benefit
     };
 
     mut_card_type.current_supply = mut_card_type.current_supply + 1;
     mut_card_type.current_issued_nunber = issued_number;
+
+    let card_id = object::id(&nft_card);
+    let partner_id = object::id(partner);
+
+    let card_created_event = NFTCardCreatedEvent {
+      card_id,
+      partner_id,
+      card_tier_id: nft_card.card_tier_id,
+      card_tier_name,
+      card_type_id: nft_card.card_type_id,
+      card_type_name,
+      issued_number: nft_card.issued_number,
+      issued_at: nft_card.issued_at,
+      benefit: nft_card.benefit
+    };
+
+    event::emit(card_created_event);
 
     option::some<NFTCard>(nft_card)
   }
@@ -148,23 +185,18 @@ module loyaltychain::nft {
 
     let nft_card = option::destroy_some<NFTCard>(nft_cardable);
 
-    let card_id = object::id(&nft_card);
-    let partner_id = object::id(partner);
-
-    let card_created_event = NFTCardCreatedEvent {
-      card_id,
-      partner_id,
+    let receive_event = NFTCardReceivedEvent{
+      card_id: object::id(&nft_card),
+      partner_id: nft_card.partner_id,
       card_tier_id: nft_card.card_tier_id,
-      card_tier_name,
       card_type_id: nft_card.card_type_id,
-      card_type_name,
       issued_number: nft_card.issued_number,
+      benefit: nft_card.benefit,
       issued_at: nft_card.issued_at,
-      owner: receiver,
     };
 
+    event::emit(receive_event);
     transfer::transfer(nft_card, receiver);
-    event::emit(card_created_event);
   }
 
   public fun burn_card(
@@ -185,7 +217,7 @@ module loyaltychain::nft {
     };
 
     let card_id = object::id(&nft_card);
-    let NFTCard { id, partner_id, card_tier_id, card_type_id, issued_number, issued_at } = nft_card;
+    let NFTCard { id, partner_id, card_tier_id, card_type_id, issued_number, issued_at, accumulated_value, benefit } = nft_card;
     object::delete(id);
 
     let burned_at = tx_context::epoch(ctx);
@@ -197,6 +229,8 @@ module loyaltychain::nft {
       card_type_id,
       card_type_name,
       issued_number,
+      accumulated_value,
+      benefit,
       issued_at,
       burned_at
     };
@@ -213,7 +247,9 @@ module loyaltychain::nft {
     name: String,
     description: String,
     image_url: String,
-    benefit: u8,
+    benefit: u64,
+    level: u8,
+    required_value: u64,
     owner_address: address,
     partner: &mut Partner,
     ctx: &mut TxContext): bool{
@@ -236,7 +272,9 @@ module loyaltychain::nft {
       id: object::new(ctx),
       name,
       description,
+      level,
       image_url: image,
+      required_value,
       benefit,
       partner_id,
       published_at
@@ -251,6 +289,7 @@ module loyaltychain::nft {
       description,
       image_url: image,
       benefit,
+      required_value,
       partner_id,
       published_at
     };
@@ -264,7 +303,6 @@ module loyaltychain::nft {
     card_tier_name: String,
     image_url: String,
     max_supply: u64,
-    capped_amount: u64,
     owner_address: address,
     partner: &mut Partner,
     ctx: &mut TxContext
@@ -294,8 +332,6 @@ module loyaltychain::nft {
       max_supply,
       current_supply: 0u64,
       current_issued_nunber: 0u64,
-      benefit: mut_card_tier.benefit,
-      capped_amount,
       published_at
     };
 
@@ -310,8 +346,6 @@ module loyaltychain::nft {
       image_url: image,
       max_supply,
       current_supply: 0u64,
-      benefit: mut_card_tier.benefit,
-      capped_amount,
       published_at
     };
 
@@ -323,6 +357,11 @@ module loyaltychain::nft {
   public fun borrow_mut_card_tier_by_name(card_tier_name: String, partner: &mut Partner,): &mut NFTCardTier {
     let mut_partner_id = partnerable::borrow_mut_partner_id(partner);
     dynamic_object_field::borrow_mut<String, NFTCardTier>(mut_partner_id, card_tier_name)
+  }
+
+  public fun use_card(nft_card: &mut NFTCard): u64 {
+    nft_card.accumulated_value = nft_card.accumulated_value + nft_card.benefit;
+    nft_card.benefit
   }
 
   public fun card_tier_name(card_tier: &NFTCardTier): String {
@@ -337,8 +376,12 @@ module loyaltychain::nft {
     &card_tier.image_url
   }
 
-  public fun card_tier_benefit(card_tier: &NFTCardTier): u8 {
+  public fun card_tier_benefit(card_tier: &NFTCardTier): u64 {
     card_tier.benefit
+  }
+
+  public fun card_tier_required_value(card_tier: &NFTCardTier): u64 {
+    card_tier.required_value
   }
 
   // CardType Helper
@@ -358,10 +401,6 @@ module loyaltychain::nft {
     card_type.max_supply
   }
 
-  public fun card_type_capped_amount(card_type: &NFTCardType): u64 {
-    card_type.capped_amount
-  }
-
   public fun card_type_current_supply(card_type: &NFTCardType): u64 {
     card_type.current_supply
   }
@@ -370,12 +409,16 @@ module loyaltychain::nft {
     card_type.current_issued_nunber
   }
 
-  public fun card_type_benefit(card_type: &NFTCardType): u8 {
-    card_type.benefit
-  }
-
   // NFTCard Helper
   public fun card_issued_number(card: &NFTCard): u64 {
     card.issued_number
+  }
+
+  public fun card_accumulated_value(card: &NFTCard): u64 {
+    card.accumulated_value
+  }
+
+  public fun card_benefit(card: &NFTCard): u64 {
+    card.benefit
   }
 }

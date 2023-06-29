@@ -484,6 +484,8 @@ module loyaltychain::memberable_test {
     let tier_description = string::utf8(b"Bronze Benefit");
     let tier_image_url = string::utf8(b"https://loyaltychain.sui/nft/bronze");
     let tier_benefit = 10;
+    let tier_level = 0u8;
+    let tier_required_value = 0u64;
 
     test_scenario::next_tx(&mut scenario, owner);
     {
@@ -497,6 +499,8 @@ module loyaltychain::memberable_test {
         tier_description,
         tier_image_url,
         tier_benefit,
+        tier_level,
+        tier_required_value,
         owner,
         partner,
         ctx
@@ -510,7 +514,6 @@ module loyaltychain::memberable_test {
     let type_name = string::utf8(b"Membership");
     let type_image_url = string::utf8(b"https://loyaltychain.sui/nft/bronze/membership");
     let max_supply = 1_000_000u64;
-    let capped_amount = 10u64;
 
     test_scenario::next_tx(&mut scenario, owner);
     {
@@ -523,7 +526,6 @@ module loyaltychain::memberable_test {
         tier_name,
         type_image_url,
         max_supply,
-        capped_amount,
         owner,
         partner,
         ctx);
@@ -636,6 +638,8 @@ module loyaltychain::memberable_test {
     let tier_description = string::utf8(b"Bronze Benefit");
     let tier_image_url = string::utf8(b"https://loyaltychain.sui/nft/bronze");
     let tier_benefit = 10;
+    let tier_level = 0u8;
+    let tier_required_value = 0u64;
 
     test_scenario::next_tx(&mut scenario, owner);
     {
@@ -649,6 +653,8 @@ module loyaltychain::memberable_test {
         tier_description,
         tier_image_url,
         tier_benefit,
+        tier_level,
+        tier_required_value,
         owner,
         partner,
         ctx
@@ -662,7 +668,6 @@ module loyaltychain::memberable_test {
     let type_name = string::utf8(b"Membership");
     let type_image_url = string::utf8(b"https://loyaltychain.sui/nft/bronze/membership");
     let max_supply = 1_000_000u64;
-    let capped_amount = 10u64;
 
     test_scenario::next_tx(&mut scenario, owner);
     {
@@ -675,7 +680,6 @@ module loyaltychain::memberable_test {
         tier_name,
         type_image_url,
         max_supply,
-        capped_amount,
         owner,
         partner,
         ctx);
@@ -788,6 +792,8 @@ module loyaltychain::memberable_test {
     let tier_description = string::utf8(b"Bronze Benefit");
     let tier_image_url = string::utf8(b"https://loyaltychain.sui/nft/bronze");
     let tier_benefit = 10;
+    let tier_level = 0u8;
+    let tier_required_value = 0u64;
 
     test_scenario::next_tx(&mut scenario, owner);
     {
@@ -801,6 +807,8 @@ module loyaltychain::memberable_test {
         tier_description,
         tier_image_url,
         tier_benefit,
+        tier_level,
+        tier_required_value,
         owner,
         partner,
         ctx
@@ -814,7 +822,6 @@ module loyaltychain::memberable_test {
     let type_name = string::utf8(b"Membership");
     let type_image_url = string::utf8(b"https://loyaltychain.sui/nft/bronze/membership");
     let max_supply = 1_000_000u64;
-    let capped_amount = 10u64;
 
     test_scenario::next_tx(&mut scenario, owner);
     {
@@ -827,7 +834,6 @@ module loyaltychain::memberable_test {
         tier_name,
         type_image_url,
         max_supply,
-        capped_amount,
         owner,
         partner,
         ctx);
