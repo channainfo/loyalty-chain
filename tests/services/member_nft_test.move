@@ -8,6 +8,7 @@ module loyaltychain::member_nft_test {
     use loyaltychain::memberable::{Self, MemberBoard};
     use loyaltychain::member_nft;
     use loyaltychain::partnerable::{Self, PartnerBoard, Partner};
+    use loyaltychain::partner_nft;
     use std::string::{Self, String};
     use std::option::{Self, Option};
 
@@ -128,7 +129,7 @@ module loyaltychain::member_nft_test {
       let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = nft::mint_card(tier_name, type_name, owner, partner, ctx);
+      let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
       let nft_card = option::destroy_some<NFTCard>(nft_cardable);
       let nft_card_id = object::id(&nft_card);
 
@@ -163,6 +164,7 @@ module loyaltychain::member_nft_test {
     use loyaltychain::memberable::{Self, MemberBoard};
     use loyaltychain::member_nft;
     use loyaltychain::partnerable::{Self, PartnerBoard, Partner};
+    use loyaltychain::partner_nft;
     use std::string::{Self, String};
     use std::option::{Self, Option};
 
@@ -283,7 +285,7 @@ module loyaltychain::member_nft_test {
       let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = nft::mint_card(tier_name, type_name, owner, partner, ctx);
+      let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
       let nft_card = option::destroy_some<NFTCard>(nft_cardable);
       let nft_card_id = object::id(&nft_card);
 
@@ -302,7 +304,7 @@ module loyaltychain::member_nft_test {
       let member = memberable::borrow_mut_member_by_email(&mut board, &email);
       let nft_card = member_nft::take_nft_card(member, nft_card_id);
       assert!(nft::card_issued_number(&nft_card) == 1, 0);
-      nft::transfer_card(nft_card, @0x0003);
+      partner_nft::transfer_card(nft_card, @0x0003);
       test_scenario::return_shared<MemberBoard>(board);
     };
 
@@ -318,6 +320,7 @@ module loyaltychain::member_nft_test {
     use loyaltychain::memberable::{Self, MemberBoard};
     use loyaltychain::member_nft;
     use loyaltychain::partnerable::{Self, PartnerBoard, Partner};
+    use loyaltychain::partner_nft;
     use std::string::{Self, String};
     use std::option::{Self, Option};
 
@@ -438,7 +441,7 @@ module loyaltychain::member_nft_test {
       let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = nft::mint_card(tier_name, type_name, owner, partner, ctx);
+      let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
       let nft_card = option::destroy_some<NFTCard>(nft_cardable);
       let nft_card_id = object::id(&nft_card);
 

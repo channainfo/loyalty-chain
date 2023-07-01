@@ -4,11 +4,11 @@ module loyaltychain::nft {
   use sui::tx_context::{Self, TxContext};
   use sui::url::{ Url};
   use sui::dynamic_object_field;
-  use sui::event;
   use sui::transfer;
+  use sui::event;
 
   use std::string::{String};
-  use std::option::{Self, Option};
+  use std::option::{Option};
   use loyaltychain::partnerable::{Self, Partner};
   use loyaltychain::util;
 
@@ -38,7 +38,7 @@ module loyaltychain::nft {
     image_url: Option<Url>,
     max_supply: u64,
     current_supply: u64,
-    current_issued_nunber: u64,
+    current_issued_number: u64,
     published_at: u64,
   }
 
@@ -75,18 +75,6 @@ module loyaltychain::nft {
     published_at: u64,
   }
 
-  struct NFTCardCreatedEvent has copy, drop {
-    card_id: ID,
-    partner_id: ID,
-    card_tier_id: ID,
-    card_tier_name: String,
-    card_type_id: ID,
-    card_type_name: String,
-    issued_number: u64,
-    benefit: u64,
-    issued_at: u64,
-  }
-
   struct NFTCardReceivedEvent has copy, drop {
     card_id: ID,
     partner_id: ID,
@@ -109,137 +97,6 @@ module loyaltychain::nft {
     benefit: u64,
     issued_at: u64,
     burned_at: u64
-  }
-
-  public fun mint_card(
-    card_tier_name: String,
-    card_type_name: String,
-    partner_address: address,
-    partner: &mut Partner,
-    ctx: &mut TxContext): Option<NFTCard>{
-
-    let partner_id = object::id(partner);
-
-    // assert!(partnerable::partner_owner_address(partner) == sender, 0);
-    if(partnerable::partner_owner_address(partner) != partner_address) {
-      return option::none<NFTCard>()
-    };
-
-    let mut_card_tier = borrow_mut_card_tier_by_name(card_tier_name, partner);
-    let card_tier_id = object::id(mut_card_tier);
-    let benefit = mut_card_tier.benefit;
-
-    let mut_card_type = borrow_mut_card_type_by_name(card_type_name, mut_card_tier);
-    let card_type_id = object::id(mut_card_type);
-
-    if(mut_card_type.current_issued_nunber >= mut_card_type.max_supply) {
-      return option::none<NFTCard>()
-    };
-
-    let issued_number = mut_card_type.current_issued_nunber + 1;
-    let issued_at = tx_context::epoch(ctx);
-
-    let nft_card = NFTCard {
-      id: object::new(ctx),
-      partner_id,
-      card_tier_id,
-      card_type_id,
-      issued_number,
-      accumulated_value: 0u64,
-      issued_at,
-      benefit
-    };
-
-    mut_card_type.current_supply = mut_card_type.current_supply + 1;
-    mut_card_type.current_issued_nunber = issued_number;
-
-    let card_id = object::id(&nft_card);
-    let partner_id = object::id(partner);
-
-    let card_created_event = NFTCardCreatedEvent {
-      card_id,
-      partner_id,
-      card_tier_id: nft_card.card_tier_id,
-      card_tier_name,
-      card_type_id: nft_card.card_type_id,
-      card_type_name,
-      issued_number: nft_card.issued_number,
-      issued_at: nft_card.issued_at,
-      benefit: nft_card.benefit
-    };
-
-    event::emit(card_created_event);
-
-    option::some<NFTCard>(nft_card)
-  }
-
-  public fun mint_and_transfer_card(
-    card_tier_name: String,
-    card_type_name: String,
-    receiver: address,
-    partner_address: address,
-    partner: &mut Partner,
-    ctx: &mut TxContext) {
-
-    let nft_cardable = mint_card(card_tier_name, card_type_name, partner_address, partner, ctx);
-    let nft_card = option::destroy_some<NFTCard>(nft_cardable);
-
-    let receive_event = NFTCardReceivedEvent{
-      card_id: object::id(&nft_card),
-      partner_id: nft_card.partner_id,
-      card_tier_id: nft_card.card_tier_id,
-      card_type_id: nft_card.card_type_id,
-      issued_number: nft_card.issued_number,
-      benefit: nft_card.benefit,
-      issued_at: nft_card.issued_at,
-    };
-
-    event::emit(receive_event);
-    transfer::transfer(nft_card, receiver);
-  }
-
-  public fun burn_card(
-    card_tier_name: String,
-    card_type_name: String,
-    nft_card: NFTCard,
-    partner: &mut Partner,
-    ctx: &mut TxContext){
-
-    let sender = tx_context::sender(ctx);
-    assert!(partnerable::partner_owner_address(partner) == sender, 0);
-
-    let mut_card_tier = borrow_mut_card_tier_by_name(card_tier_name, partner);
-    let mut_card_type = borrow_mut_card_type_by_name(card_type_name, mut_card_tier);
-
-    if(mut_card_type.current_supply > 0){
-      mut_card_type.current_supply = mut_card_type.current_supply - 1;
-    };
-
-    let card_id = object::id(&nft_card);
-    let NFTCard { id, partner_id, card_tier_id, card_type_id, issued_number, issued_at, accumulated_value, benefit } = nft_card;
-    object::delete(id);
-
-    let burned_at = tx_context::epoch(ctx);
-    let nft_card_burned_event = NFTCardBurnedEvent {
-      card_id,
-      partner_id,
-      card_tier_id,
-      card_tier_name,
-      card_type_id,
-      card_type_name,
-      issued_number,
-      accumulated_value,
-      benefit,
-      issued_at,
-      burned_at
-    };
-    event::emit(nft_card_burned_event);
-  }
-
-  public fun transfer_card(
-    nft_card: NFTCard,
-    receiver: address) {
-    transfer::transfer(nft_card, receiver);
   }
 
   public fun register_card_tier(
@@ -330,7 +187,7 @@ module loyaltychain::nft {
       image_url: image,
       max_supply,
       current_supply: 0u64,
-      current_issued_nunber: 0u64,
+      current_issued_number: 0u64,
       published_at
     };
 
@@ -350,6 +207,40 @@ module loyaltychain::nft {
 
     event::emit(card_type_evnt);
     true
+  }
+
+  public fun new_nft_card(
+    partner_id: ID,
+    card_tier_id: ID,
+    card_type_id: ID,
+    issued_number: u64,
+    issued_at: u64,
+    benefit: u64,
+    ctx: &mut TxContext): NFTCard {
+    NFTCard {
+      id: object::new(ctx),
+      partner_id,
+      card_tier_id,
+      card_type_id,
+      issued_number,
+      accumulated_value: 0u64,
+      issued_at,
+      benefit
+    }
+  }
+
+  public fun burn_nft_card(nft_card: NFTCard, card_type: &mut NFTCardType): (ID, ID, ID, u64, u64, u64, u64){
+    if(card_type_current_supply(card_type) > 0){
+      card_type.current_supply = card_type.current_supply - 1;
+    };
+
+    let NFTCard { id, partner_id, card_tier_id, card_type_id, issued_number, issued_at, accumulated_value, benefit } = nft_card;
+    object::delete(id);
+    (partner_id, card_tier_id, card_type_id, issued_number, issued_at, accumulated_value, benefit)
+  }
+
+  public fun transfer_card(nft_card: NFTCard, receiver: address) {
+    transfer::transfer(nft_card, receiver);
   }
 
   // CardTier Helper
@@ -405,12 +296,22 @@ module loyaltychain::nft {
   }
 
   public fun card_type_current_issued_number(card_type: &NFTCardType): u64 {
-    card_type.current_issued_nunber
+    card_type.current_issued_number
+  }
+
+  public fun increase_current_issued_number(card_type: &mut NFTCardType): u64{
+    card_type.current_supply = card_type.current_supply + 1;
+    card_type.current_issued_number = card_type.current_issued_number + 1;
+    card_type.current_issued_number
   }
 
   // NFTCard Helper
   public fun card_issued_number(card: &NFTCard): u64 {
     card.issued_number
+  }
+
+  public fun card_issued_at(card: &NFTCard): u64 {
+    card.issued_at
   }
 
   public fun card_accumulated_value(card: &NFTCard): u64 {
@@ -419,5 +320,17 @@ module loyaltychain::nft {
 
   public fun card_benefit(card: &NFTCard): u64 {
     card.benefit
+  }
+
+  public fun card_partner_id(card: &NFTCard): ID {
+    card.partner_id
+  }
+
+  public fun card_card_type_id(card: &NFTCard): ID {
+    card.card_type_id
+  }
+
+  public fun card_card_tier_id(card: &NFTCard): ID {
+    card.card_tier_id
   }
 }

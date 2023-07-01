@@ -6,6 +6,7 @@ module loyaltychain::main{
   use loyaltychain::cap::{Self, AdminCap};
   use loyaltychain::partnerable::{Self, PartnerBoard, CompanyBoard, Partner};
   use loyaltychain::partner_treasury;
+  use loyaltychain::partner_nft;
   use loyaltychain::memberable::{Self, MemberBoard, Member};
   use loyaltychain::member_nft;
   use loyaltychain::member_token;
@@ -245,7 +246,7 @@ module loyaltychain::main{
     partner: &mut Partner,
     ctx: &mut TxContext) {
 
-    nft::mint_and_transfer_card(
+    partner_nft::mint_and_transfer_card(
       card_tier_name,
       card_type_name,
       receiver,
@@ -264,7 +265,7 @@ module loyaltychain::main{
     ctx: &mut TxContext) {
 
     let partner_address = tx_context::sender(ctx);
-    nft::mint_and_transfer_card(
+    partner_nft::mint_and_transfer_card(
       card_tier_name,
       card_type_name,
       receiver,

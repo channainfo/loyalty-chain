@@ -304,6 +304,7 @@ module loyaltychain::nft_test {
     use std::string::{Self};
     use std::option::{Self, Option};
     use loyaltychain::partnerable::{Self, PartnerBoard, Partner};
+    use loyaltychain::partner_nft;
     use loyaltychain::nft::{Self, NFTCard};
 
     let owner = @0x0001;
@@ -399,12 +400,12 @@ module loyaltychain::nft_test {
       let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = nft::mint_card(tier_name, type_name, owner, partner, ctx);
+      let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
 
       assert!(option::is_some<NFTCard>(&nft_cardable) == true, 0);
 
       let nft_card = option::destroy_some<NFTCard>(nft_cardable);
-      nft::transfer_card(nft_card, receiver);
+      partner_nft::transfer_card(nft_card, receiver);
 
       test_scenario::return_shared<PartnerBoard>(partner_board);
     };
@@ -439,7 +440,7 @@ module loyaltychain::nft_test {
       let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      nft::mint_and_transfer_card( tier_name, type_name, receiver, owner, partner, ctx);
+      partner_nft::mint_and_transfer_card( tier_name, type_name, receiver, owner, partner, ctx);
       test_scenario::return_shared<PartnerBoard>(partner_board);
     };
 
@@ -481,7 +482,7 @@ module loyaltychain::nft_test {
       let nft_card1 = test_scenario::take_from_address<NFTCard>(&scenario,receiver);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      nft::burn_card(tier_name, type_name, nft_card1, partner, ctx);
+      partner_nft::burn_card(tier_name, type_name, nft_card1, partner, ctx);
 
       test_scenario::return_to_address<NFTCard>(receiver, nft_card2);
       test_scenario::return_shared<PartnerBoard>(partner_board);
@@ -512,6 +513,7 @@ module loyaltychain::nft_test {
     use std::string::{Self};
     use std::option::{Self, Option};
     use loyaltychain::partnerable::{Self, PartnerBoard, Partner};
+    use loyaltychain::partner_nft;
     use loyaltychain::nft::{Self, NFTCard};
 
     let owner = @0x0001;
@@ -607,7 +609,7 @@ module loyaltychain::nft_test {
       let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = nft::mint_card(tier_name, type_name, owner, partner, ctx);
+      let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
 
       assert!(option::is_some<NFTCard>(&nft_cardable) == true, 0);
 
@@ -616,7 +618,7 @@ module loyaltychain::nft_test {
 
       assert!(card_benefit == tier_benefit, 0);
 
-      nft::transfer_card(nft_card, receiver);
+      partner_nft::transfer_card(nft_card, receiver);
 
       test_scenario::return_shared<PartnerBoard>(partner_board);
     };
