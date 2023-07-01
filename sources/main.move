@@ -1,6 +1,6 @@
 module loyaltychain::main{
   use sui::tx_context::{Self, TxContext};
-  use sui::coin::{Coin};
+  use sui::coin::{Coin, TreasuryCap};
   use sui::object::{ID};
 
   use loyaltychain::cap::{Self, AdminCap};
@@ -10,6 +10,7 @@ module loyaltychain::main{
 
   use std::string::{String};
 
+  // Trigger when package is published
   fun init(ctx: &mut TxContext){
     cap::init_create_admin_cap(ctx);
     partnerable::init_create_boards(ctx);
@@ -307,4 +308,13 @@ module loyaltychain::main{
 
     memberable::take_and_transfer_nft_card(member, nft_card_id, receiver_address, ctx);
   }
+
+  public entry fun transfer_treasury_cap<Token>(
+    _admin_cap: &AdminCap,
+    treasury_cap: TreasuryCap<Token>,
+    partner_code: String,
+    partner_board: &mut PartnerBoard){
+    partnerable::receive_treasury_cap<Token>(treasury_cap, partner_code, partner_board);
+  }
+
 }

@@ -5,10 +5,12 @@ module loyaltychain::partnerable {
   use sui::transfer;
   use sui::dynamic_object_field;
   use sui::event;
+  use sui::coin::{TreasuryCap};
 
   use std::string::{ String};
-
-  // use loyaltychain::nft_card::{Self, NFTCardType};
+  use loyaltychain::util;
+  // use loyaltychain::memberable::{Self, Member};
+  // use loyaltychain::nft::{Self};
 
   struct PartnerBoard has key, store {
     id: UID,
@@ -18,7 +20,7 @@ module loyaltychain::partnerable {
     public_companies_count: u64
   }
 
-  struct Partner has key, store {
+  struct Partner has key, store{
     id: UID,
     name: String,
     code: String,
@@ -30,8 +32,7 @@ module loyaltychain::partnerable {
     owner_address: address,
     companies_count: u64,
     created_at: u64,
-    allow_nft_card: bool
-    // token: Option<PartnerTOken>
+    allow_nft_card: bool,
   }
 
   struct PartnerCap has key, store{
@@ -242,6 +243,23 @@ module loyaltychain::partnerable {
     true
   }
 
+  public fun receive_treasury_cap<Token>(treasury_cap: TreasuryCap<Token>, partner_code: String, partner_board: &mut PartnerBoard) {
+    let token_name = util::get_name_as_string<Token>();
+    let partner = borrow_mut_parter_by_code(partner_code, partner_board);
+    dynamic_object_field::add<String, TreasuryCap<Token>>(&mut partner.id, token_name, treasury_cap);
+  }
+
+  // Treasury Helper
+  public fun borrow_mut_treasury_cap<Token>(partner: &mut Partner): &mut TreasuryCap<Token> {
+    let token_name = util::get_name_as_string<Token>();
+    dynamic_object_field::borrow_mut<String, TreasuryCap<Token>>(&mut partner.id, token_name)
+  }
+
+  public fun treasury_cap_exists<Token>(partner: &Partner): bool {
+    let token_name = util::get_name_as_string<Token>();
+    dynamic_object_field::exists_<String>(&partner.id, token_name)
+  }
+
   // Helper boards
   public fun partners_count(partner_board: &PartnerBoard): u64 {
     partner_board.partners_count
@@ -319,7 +337,6 @@ module loyaltychain::partnerable {
   public fun partner_allow_nft_card(partner: &Partner): bool {
     partner.allow_nft_card
   }
-
 
   // PartnerCap Helper
   public fun partner_cap_partner_id(partner_cap: &PartnerCap): ID {

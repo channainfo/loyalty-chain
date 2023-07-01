@@ -245,9 +245,4 @@ module loyaltychain::partnerable_test {
     assert!(test_scenario::num_user_events(&effects) == 1, 0);
     test_scenario::end(scenario);
   }
-
-  #[test]
-  public fun test_mint_nft_card_type(){
-    
-  }
 }
