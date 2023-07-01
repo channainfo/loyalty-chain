@@ -1,4 +1,4 @@
-module loyaltychain::memberable {
+module loyaltychain::member {
   use sui::tx_context::{Self, TxContext};
   use sui::transfer::{Self};
   use sui::object::{Self, UID, ID };

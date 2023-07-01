@@ -1,5 +1,5 @@
 #[test_only]
-module loyaltychain::partnerable_test {
+module loyaltychain::partner_test {
 
 
   #[test]
@@ -7,14 +7,14 @@ module loyaltychain::partnerable_test {
 
     use sui::test_scenario;
 
-    use loyaltychain::partnerable::{Self, PartnerBoard, CompanyBoard};
+    use loyaltychain::partner::{Self, PartnerBoard, CompanyBoard};
 
     let owner = @0001;
     let scenario = test_scenario::begin(owner);
 
     {
       let ctx = test_scenario::ctx(&mut scenario);
-      partnerable::init_create_boards(ctx);
+      partner::init_create_boards(ctx);
 
     };
 
@@ -23,13 +23,13 @@ module loyaltychain::partnerable_test {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let company_board = test_scenario::take_shared<CompanyBoard>(&scenario);
 
-      assert!( partnerable::partners_count(&partner_board) == 0, 0 );
-      assert!( partnerable::public_partners_count(&partner_board) == 0, 0 );
-      assert!( partnerable::partners_companies_count(&partner_board) == 0, 0 );
-      assert!( partnerable::partners_public_companies_count(&partner_board) == 0, 0 );
+      assert!( partner::partners_count(&partner_board) == 0, 0 );
+      assert!( partner::public_partners_count(&partner_board) == 0, 0 );
+      assert!( partner::partners_companies_count(&partner_board) == 0, 0 );
+      assert!( partner::partners_public_companies_count(&partner_board) == 0, 0 );
 
-      assert!( partnerable::companies_count(&company_board) == 0, 0 );
-      assert!( partnerable::public_companies_count(&company_board) == 0, 0 );
+      assert!( partner::companies_count(&company_board) == 0, 0 );
+      assert!( partner::public_companies_count(&company_board) == 0, 0 );
 
       test_scenario::return_shared<PartnerBoard>(partner_board);
       test_scenario::return_shared<CompanyBoard>(company_board);
@@ -45,7 +45,7 @@ module loyaltychain::partnerable_test {
     use sui::object;
 
     use std::string::{Self};
-    use loyaltychain::partnerable::{Self, PartnerBoard, Partner, PartnerCap};
+    use loyaltychain::partner::{Self, PartnerBoard, Partner, PartnerCap};
 
     let owner = @0x0001;
     let name = string::utf8(b"CM Market");
@@ -60,7 +60,7 @@ module loyaltychain::partnerable_test {
     let scenario = test_scenario::begin(owner);
     {
       let ctx = test_scenario::ctx(&mut scenario);
-      partnerable::init_create_boards(ctx);
+      partner::init_create_boards(ctx);
     };
 
     // Scenario 1: Register a new partner
@@ -69,7 +69,7 @@ module loyaltychain::partnerable_test {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let result = partnerable::register_partner(
+      let result = partner::register_partner(
         name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
@@ -83,25 +83,25 @@ module loyaltychain::partnerable_test {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
 
       // PartnerBoard partners_count increase to 1
-      assert!(partnerable::partners_count(&partner_board) == 1, 0);
+      assert!(partner::partners_count(&partner_board) == 1, 0);
       // no public exists yet
-      assert!(partnerable::public_partners_count(&partner_board) == 0, 0);
+      assert!(partner::public_partners_count(&partner_board) == 0, 0);
 
       // Expect a partner is created with correct values
-      let partner :&Partner = partnerable::borrow_partner_by_code(code, &partner_board);
-      assert!(partnerable::partner_name(partner) == name, 0 );
-      assert!(partnerable::partner_code(partner) == code, 0 );
-      assert!(partnerable::partner_excerpt(partner) == excerpt, 0 );
-      assert!(partnerable::partner_content(partner) == content, 0 );
-      assert!(partnerable::partner_logo_url(partner) == logo_url, 0 );
-      assert!(partnerable::partner_is_public(partner) == is_public, 0 );
-      assert!(partnerable::partner_token_name(partner) == token_name, 0 );
-      assert!(partnerable::partner_owner_address(partner) == owner, 0 );
-      assert!(partnerable::partner_companies_count(partner) == 0u64, 0 );
+      let partner :&Partner = partner::borrow_partner_by_code(code, &partner_board);
+      assert!(partner::partner_name(partner) == name, 0 );
+      assert!(partner::partner_code(partner) == code, 0 );
+      assert!(partner::partner_excerpt(partner) == excerpt, 0 );
+      assert!(partner::partner_content(partner) == content, 0 );
+      assert!(partner::partner_logo_url(partner) == logo_url, 0 );
+      assert!(partner::partner_is_public(partner) == is_public, 0 );
+      assert!(partner::partner_token_name(partner) == token_name, 0 );
+      assert!(partner::partner_owner_address(partner) == owner, 0 );
+      assert!(partner::partner_companies_count(partner) == 0u64, 0 );
 
       // Expect partern_cap is owned by the address with correct value
       let partner_cap = test_scenario::take_from_address<PartnerCap>(&scenario, owner);
-      assert!(partnerable::partner_cap_partner_id(&partner_cap) == object::id(partner), 0);
+      assert!(partner::partner_cap_partner_id(&partner_cap) == object::id(partner), 0);
 
       test_scenario::return_to_address<PartnerCap>(owner, partner_cap);
       test_scenario::return_shared<PartnerBoard>(partner_board);
@@ -116,7 +116,7 @@ module loyaltychain::partnerable_test {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let result = partnerable::register_partner(
+      let result = partner::register_partner(
         name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
@@ -134,7 +134,7 @@ module loyaltychain::partnerable_test {
     use sui::test_scenario;
     use sui::object::{Self};
     use std::string::{Self};
-    use loyaltychain::partnerable::{Self, CompanyBoard, PartnerBoard};
+    use loyaltychain::partner::{Self, CompanyBoard, PartnerBoard};
 
     let owner = @0001;
 
@@ -157,7 +157,7 @@ module loyaltychain::partnerable_test {
     let scenario = test_scenario::begin(owner);
     {
       let ctx = test_scenario::ctx(&mut scenario);
-      partnerable::init_create_boards(ctx);
+      partner::init_create_boards(ctx);
     };
 
     // Next transaction to register a partner and expect to be saved.
@@ -166,7 +166,7 @@ module loyaltychain::partnerable_test {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
       // Already tested
-      partnerable::register_partner(name, code, excerpt, content, logo_url, is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx);
+      partner::register_partner(name, code, excerpt, content, logo_url, is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx);
       test_scenario::return_shared<PartnerBoard>(partner_board);
     };
 
@@ -178,7 +178,7 @@ module loyaltychain::partnerable_test {
 
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let result = partnerable::register_company(
+      let result = partner::register_company(
         company_name, company_code, company_excerpt, company_content,
         company_logo_url, code, owner, &mut company_board, &mut partner_board, ctx
       );
@@ -194,29 +194,29 @@ module loyaltychain::partnerable_test {
     {
       // Expect partner board is updated with correct data
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      assert!(partnerable::partners_count(&partner_board) == 1, 0);
-      assert!(partnerable::public_partners_count(&partner_board) == 1, 0);
-      assert!(partnerable::partners_companies_count(&partner_board) == 1, 0);
-      assert!(partnerable::partners_public_companies_count(&partner_board) == 1, 0);
+      assert!(partner::partners_count(&partner_board) == 1, 0);
+      assert!(partner::public_partners_count(&partner_board) == 1, 0);
+      assert!(partner::partners_companies_count(&partner_board) == 1, 0);
+      assert!(partner::partners_public_companies_count(&partner_board) == 1, 0);
 
       // Expect company board is updated with correct data
       let company_board = test_scenario::take_shared<CompanyBoard>(&scenario);
-      assert!(partnerable::companies_count(&company_board) == 1, 0);
-      assert!(partnerable::public_companies_count(&company_board) == 1, 0);
+      assert!(partner::companies_count(&company_board) == 1, 0);
+      assert!(partner::public_companies_count(&company_board) == 1, 0);
 
       // Expect partner is updated with correct data
-      let partner = partnerable::borrow_partner_by_code(code, &partner_board);
+      let partner = partner::borrow_partner_by_code(code, &partner_board);
       let partner_id = object::id(partner);
-      assert!(partnerable::partner_companies_count(partner) == 1, 0);
+      assert!(partner::partner_companies_count(partner) == 1, 0);
 
       // Expect a company is created with correct data
-      let company = partnerable::borrow_company_by_code(company_code, &company_board);
-      assert!(partnerable::company_code(company) == company_code, 0);
-      assert!(partnerable::company_name(company) == company_name, 0);
-      assert!(partnerable::company_excerpt(company) == company_excerpt, 0);
-      assert!(partnerable::company_content(company) == company_content, 0);
-      assert!(partnerable::company_logo_url(company) == company_logo_url, 0);
-      assert!(partnerable::company_partner_id(company) == &partner_id, 0);
+      let company = partner::borrow_company_by_code(company_code, &company_board);
+      assert!(partner::company_code(company) == company_code, 0);
+      assert!(partner::company_name(company) == company_name, 0);
+      assert!(partner::company_excerpt(company) == company_excerpt, 0);
+      assert!(partner::company_content(company) == company_content, 0);
+      assert!(partner::company_logo_url(company) == company_logo_url, 0);
+      assert!(partner::company_partner_id(company) == &partner_id, 0);
 
       test_scenario::return_shared<CompanyBoard>(company_board);
       test_scenario::return_shared<PartnerBoard>(partner_board);
@@ -230,7 +230,7 @@ module loyaltychain::partnerable_test {
 
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let result = partnerable::register_company(
+      let result = partner::register_company(
         company_name, company_code, company_excerpt, company_content,
         company_logo_url, code, owner, &mut company_board, &mut partner_board, ctx
       );

@@ -150,9 +150,9 @@ module loyaltychain::loy {
     use sui::test_scenario;
     use sui::object::{Self};
     use sui::coin::{Self, Coin, TreasuryCap};
-    use loyaltychain::orderable;
-    use loyaltychain::partnerable::{Self, PartnerBoard, Partner,};
-    use loyaltychain::memberable::{Self, MemberBoard};
+    use loyaltychain::order;
+    use loyaltychain::partner::{Self, PartnerBoard, Partner,};
+    use loyaltychain::member::{Self, MemberBoard};
     use loyaltychain::member_nft;
     use loyaltychain::member_token;
     use loyaltychain::partner_treasury;
@@ -185,7 +185,7 @@ module loyaltychain::loy {
 
     {
       let ctx = test_scenario::ctx(&mut scenario);
-      partnerable::init_create_boards(ctx);
+      partner::init_create_boards(ctx);
     };
 
     test_scenario::next_tx(&mut scenario, partner_address);
@@ -193,7 +193,7 @@ module loyaltychain::loy {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let result = partnerable::register_partner(
+      let result = partner::register_partner(
         name, code, excerpt, content, logo_url,is_public, token_name, partner_address, allow_nft_card, &mut partner_board, ctx
       );
 
@@ -207,14 +207,14 @@ module loyaltychain::loy {
     let member_address = @0x0003;
     {
       let ctx = test_scenario::ctx(&mut scenario);
-      memberable::init_create_member_board(ctx);
+      member::init_create_member_board(ctx);
     };
 
     test_scenario::next_tx(&mut scenario, member_address);
     {
       let board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
-      let result = memberable::register_member(member_nick_name, member_email, member_address, &mut board, ctx);
+      let result = member::register_member(member_nick_name, member_email, member_address, &mut board, ctx);
 
       // expect registration to be successful
       assert!(result == true, 0);
@@ -233,7 +233,7 @@ module loyaltychain::loy {
     test_scenario::next_tx(&mut scenario, partner_address);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
 
       let ctx = test_scenario::ctx(&mut scenario);
 
@@ -261,7 +261,7 @@ module loyaltychain::loy {
     test_scenario::next_tx(&mut scenario, partner_address);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = nft::register_card_type(
@@ -282,7 +282,7 @@ module loyaltychain::loy {
     test_scenario::next_tx(&mut scenario, partner_address);
     let nft_card_id = {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, partner_address, partner, ctx);
@@ -301,7 +301,7 @@ module loyaltychain::loy {
     test_scenario::next_tx(&mut scenario, member_address);
     {
       let member_board = test_scenario::take_shared<MemberBoard>(&scenario);
-      let member = memberable::borrow_mut_member_by_email(&mut member_board, &member_email);
+      let member = member::borrow_mut_member_by_email(&mut member_board, &member_email);
       let nft_card = test_scenario::take_from_address<NFTCard>(&mut scenario, member_address);
       let ctx = test_scenario::ctx(&mut scenario);
 
@@ -324,7 +324,7 @@ module loyaltychain::loy {
     test_scenario::next_tx(&mut scenario, admin_address);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
 
       let exists = partner_treasury::treasury_cap_exists<LOY>(partner);
       assert!(exists == true, 0);
@@ -338,7 +338,7 @@ module loyaltychain::loy {
       let member_board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      orderable::complete_order<LOY>(
+      order::complete_order<LOY>(
         order_id,
         nft_card_id,
         member_email,
@@ -356,7 +356,7 @@ module loyaltychain::loy {
     test_scenario::next_tx(&mut scenario, member_address);
     {
       let board = test_scenario::take_shared(&scenario);
-      let member = memberable::borrow_mut_member_by_email(&mut board, &member_email);
+      let member = member::borrow_mut_member_by_email(&mut board, &member_email);
       let metadata_loy = util::get_name_as_bytes<LOY>();
 
       let coin_loy: &Coin<LOY> = member_token::borrow_coin_by_coin_type<LOY>(member, metadata_loy);
@@ -370,7 +370,7 @@ module loyaltychain::loy {
     test_scenario::next_tx(&mut scenario, member_address);
     {
       let board = test_scenario::take_shared(&scenario);
-      let member = memberable::borrow_mut_member_by_email(&mut board, &member_email);
+      let member = member::borrow_mut_member_by_email(&mut board, &member_email);
       let nft_card = member_nft::borrow_mut_nft_card_by_id(member, nft_card_id);
 
       let accumulated_value = nft::card_accumulated_value(nft_card);

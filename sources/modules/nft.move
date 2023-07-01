@@ -9,7 +9,7 @@ module loyaltychain::nft {
 
   use std::string::{String};
   use std::option::{Option};
-  use loyaltychain::partnerable::{Self, Partner};
+  use loyaltychain::partner::{Self, Partner};
   use loyaltychain::util;
 
   const ERROR_NOT_OWNER: u8 = 0;
@@ -110,12 +110,12 @@ module loyaltychain::nft {
     partner: &mut Partner,
     ctx: &mut TxContext): bool{
 
-    if(partnerable::partner_owner_address(partner) != owner_address){
+    if(partner::partner_owner_address(partner) != owner_address){
       return false
     };
 
     let partner_id = object::id(partner);
-    let mut_parnter_id = partnerable::borrow_mut_partner_id(partner);
+    let mut_parnter_id = partner::borrow_mut_partner_id(partner);
 
     if(dynamic_object_field::exists_<String>(mut_parnter_id, name)){
       return false
@@ -164,7 +164,7 @@ module loyaltychain::nft {
     ctx: &mut TxContext
     ): bool{
 
-    if(partnerable::partner_owner_address(partner) != owner_address){
+    if(partner::partner_owner_address(partner) != owner_address){
       return false
     };
 
@@ -245,7 +245,7 @@ module loyaltychain::nft {
 
   // CardTier Helper
   public fun borrow_mut_card_tier_by_name(card_tier_name: String, partner: &mut Partner,): &mut NFTCardTier {
-    let mut_partner_id = partnerable::borrow_mut_partner_id(partner);
+    let mut_partner_id = partner::borrow_mut_partner_id(partner);
     dynamic_object_field::borrow_mut<String, NFTCardTier>(mut_partner_id, card_tier_name)
   }
 

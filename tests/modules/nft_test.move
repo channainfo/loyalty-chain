@@ -8,7 +8,7 @@ module loyaltychain::nft_test {
 
     use std::string::{Self};
     use std::option::{Self};
-    use loyaltychain::partnerable::{Self, PartnerBoard, Partner};
+    use loyaltychain::partner::{Self, PartnerBoard, Partner};
     use loyaltychain::nft::{Self};
 
     let owner = @0x0001;
@@ -16,7 +16,7 @@ module loyaltychain::nft_test {
     let scenario = test_scenario::begin(owner);
     {
       let ctx = test_scenario::ctx(&mut scenario);
-      partnerable::init_create_boards(ctx);
+      partner::init_create_boards(ctx);
     };
 
     // Register a partner
@@ -33,7 +33,7 @@ module loyaltychain::nft_test {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let result = partnerable::register_partner(
+      let result = partner::register_partner(
         name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
@@ -54,7 +54,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, stranger);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
 
       let ctx = test_scenario::ctx(&mut scenario);
 
@@ -77,7 +77,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
 
       let ctx = test_scenario::ctx(&mut scenario);
 
@@ -101,7 +101,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
 
       let card_tier = nft::borrow_mut_card_tier_by_name(tier_name, partner);
 
@@ -118,7 +118,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
 
       let ctx = test_scenario::ctx(&mut scenario);
 
@@ -147,7 +147,7 @@ module loyaltychain::nft_test {
 
     use std::string::{Self};
     use std::option::{Self};
-    use loyaltychain::partnerable::{Self, PartnerBoard, Partner};
+    use loyaltychain::partner::{Self, PartnerBoard, Partner};
     use loyaltychain::nft::{Self};
 
     let owner = @0x0001;
@@ -155,7 +155,7 @@ module loyaltychain::nft_test {
     let scenario = test_scenario::begin(owner);
     {
       let ctx = test_scenario::ctx(&mut scenario);
-      partnerable::init_create_boards(ctx);
+      partner::init_create_boards(ctx);
     };
 
     // Register a partner
@@ -172,7 +172,7 @@ module loyaltychain::nft_test {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let result = partnerable::register_partner(
+      let result = partner::register_partner(
         name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
@@ -191,7 +191,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
 
       let ctx = test_scenario::ctx(&mut scenario);
 
@@ -221,7 +221,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, stranger);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = nft::register_card_type(
@@ -241,7 +241,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = nft::register_card_type(
@@ -261,7 +261,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let card_tier = nft::borrow_mut_card_tier_by_name(tier_name, partner);
       let card_type = nft::borrow_mut_card_type_by_name(type_name, card_tier);
 
@@ -278,7 +278,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = nft::register_card_type(
@@ -303,7 +303,7 @@ module loyaltychain::nft_test {
 
     use std::string::{Self};
     use std::option::{Self, Option};
-    use loyaltychain::partnerable::{Self, PartnerBoard, Partner};
+    use loyaltychain::partner::{Self, PartnerBoard, Partner};
     use loyaltychain::partner_nft;
     use loyaltychain::nft::{Self, NFTCard};
 
@@ -312,7 +312,7 @@ module loyaltychain::nft_test {
     let scenario = test_scenario::begin(owner);
     {
       let ctx = test_scenario::ctx(&mut scenario);
-      partnerable::init_create_boards(ctx);
+      partner::init_create_boards(ctx);
     };
 
     // Register a partner
@@ -329,7 +329,7 @@ module loyaltychain::nft_test {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let result = partnerable::register_partner(
+      let result = partner::register_partner(
         name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
@@ -348,7 +348,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
 
       let ctx = test_scenario::ctx(&mut scenario);
 
@@ -376,7 +376,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = nft::register_card_type(
@@ -397,7 +397,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
@@ -422,7 +422,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
 
       let card_tier = nft::borrow_mut_card_tier_by_name(tier_name, partner);
       let card_type = nft::borrow_mut_card_type_by_name(type_name, card_tier);
@@ -437,7 +437,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
       partner_nft::mint_and_transfer_card( tier_name, type_name, receiver, owner, partner, ctx);
@@ -461,7 +461,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
 
       let card_tier = nft::borrow_mut_card_tier_by_name(tier_name, partner);
       let card_type = nft::borrow_mut_card_type_by_name(type_name, card_tier);
@@ -476,7 +476,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
 
       let nft_card2 = test_scenario::take_from_address<NFTCard>(&scenario,receiver);
       let nft_card1 = test_scenario::take_from_address<NFTCard>(&scenario,receiver);
@@ -492,7 +492,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
 
       let card_tier = nft::borrow_mut_card_tier_by_name(tier_name, partner);
       let card_type = nft::borrow_mut_card_type_by_name(type_name, card_tier);
@@ -512,7 +512,7 @@ module loyaltychain::nft_test {
 
     use std::string::{Self};
     use std::option::{Self, Option};
-    use loyaltychain::partnerable::{Self, PartnerBoard, Partner};
+    use loyaltychain::partner::{Self, PartnerBoard, Partner};
     use loyaltychain::partner_nft;
     use loyaltychain::nft::{Self, NFTCard};
 
@@ -521,7 +521,7 @@ module loyaltychain::nft_test {
     let scenario = test_scenario::begin(owner);
     {
       let ctx = test_scenario::ctx(&mut scenario);
-      partnerable::init_create_boards(ctx);
+      partner::init_create_boards(ctx);
     };
 
     // Register a partner
@@ -538,7 +538,7 @@ module loyaltychain::nft_test {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let result = partnerable::register_partner(
+      let result = partner::register_partner(
         name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
@@ -557,7 +557,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
 
       let ctx = test_scenario::ctx(&mut scenario);
 
@@ -585,7 +585,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = nft::register_card_type(
@@ -606,7 +606,7 @@ module loyaltychain::nft_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);

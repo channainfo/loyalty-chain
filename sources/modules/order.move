@@ -1,10 +1,10 @@
-module loyaltychain::orderable {
+module loyaltychain::order {
   use sui::tx_context::{Self, TxContext};
   use sui::object::{ID};
   use sui::event;
 
-  use loyaltychain::memberable::{Self, MemberBoard, Member};
-  use loyaltychain::partnerable::{Self,PartnerBoard, Partner};
+  use loyaltychain::member::{Self, MemberBoard, Member};
+  use loyaltychain::partner::{Self,PartnerBoard, Partner};
   use loyaltychain::partner_treasury;
   use loyaltychain::member_nft;
   use loyaltychain::member_token;
@@ -30,16 +30,16 @@ module loyaltychain::orderable {
     partner_board: &mut PartnerBoard,
     ctx: &mut TxContext){
 
-    let partner: &mut Partner = partnerable::borrow_mut_parter_by_code(partner_code, partner_board );
+    let partner: &mut Partner = partner::borrow_mut_parter_by_code(partner_code, partner_board );
     assert!(partner_treasury::treasury_cap_exists<Token>(partner) == true, 0);
 
-    let token_name = partnerable::partner_token_name(partner);
+    let token_name = partner::partner_token_name(partner);
     let token_sym = util::get_name_as_string<Token>();
 
     let treasury_cap = partner_treasury::borrow_mut_treasury_cap<Token>(partner);
     assert!(token_name == token_sym, 0);
 
-    let member: &mut Member = memberable::borrow_mut_member_by_email(member_board, &member_email);
+    let member: &mut Member = member::borrow_mut_member_by_email(member_board, &member_email);
     let nft_card = member_nft::borrow_mut_nft_card_by_id(member, nft_card_id);
     let value = nft::use_card(nft_card);
     let coin = token_managable::mint<Token>(treasury_cap, value, ctx);
@@ -50,7 +50,7 @@ module loyaltychain::orderable {
     let completed_order_event = CompletedOrderEvent {
       order_id,
       token_earn: value,
-      owner: memberable::member_owner(member),
+      owner: member::member_owner(member),
       created_at
     };
 
