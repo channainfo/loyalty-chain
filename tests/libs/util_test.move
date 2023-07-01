@@ -86,7 +86,6 @@ module loyaltychain::util_test {
       let value = b"00000000000000000000000000000000::loyaltychain::loy::LOY";
 
       let result = util::get_type_from_bytes(value);
-      std::debug::print(&string::utf8(result));
       assert!(result == expected, 0);
     };
 
@@ -96,7 +95,6 @@ module loyaltychain::util_test {
       let value = b"LOY";
 
       let result = util::get_type_from_bytes(value);
-      std::debug::print(&string::utf8(result));
       assert!(result == expected, 0);
     };
 

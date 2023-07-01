@@ -5,6 +5,7 @@ module loyaltychain::main{
 
   use loyaltychain::cap::{Self, AdminCap};
   use loyaltychain::partnerable::{Self, PartnerBoard, CompanyBoard, Partner};
+  use loyaltychain::partner_treasury;
   use loyaltychain::memberable::{Self, MemberBoard, Member};
   use loyaltychain::member_nft;
   use loyaltychain::member_token;
@@ -316,7 +317,7 @@ module loyaltychain::main{
     treasury_cap: TreasuryCap<Token>,
     partner_code: String,
     partner_board: &mut PartnerBoard){
-    partnerable::receive_treasury_cap<Token>(treasury_cap, partner_code, partner_board);
+    partner_treasury::receive_treasury_cap<Token>(treasury_cap, partner_code, partner_board);
   }
 
 }

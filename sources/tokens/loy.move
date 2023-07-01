@@ -155,6 +155,7 @@ module loyaltychain::loy {
     use loyaltychain::memberable::{Self, MemberBoard};
     use loyaltychain::member_nft;
     use loyaltychain::member_token;
+    use loyaltychain::partner_treasury;
     use loyaltychain::nft::{Self, NFTCard};
     use loyaltychain::loy::{LOY};
     use loyaltychain::util;
@@ -314,7 +315,7 @@ module loyaltychain::loy {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let treasury_cap = test_scenario::take_from_sender<TreasuryCap<LOY>>(&mut scenario);
 
-      partnerable::receive_treasury_cap<LOY>(treasury_cap, code, &mut partner_board);
+      partner_treasury::receive_treasury_cap<LOY>(treasury_cap, code, &mut partner_board);
       test_scenario::return_shared(partner_board);
     };
 
@@ -324,7 +325,7 @@ module loyaltychain::loy {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
 
-      let exists = partnerable::treasury_cap_exists<LOY>(partner);
+      let exists = partner_treasury::treasury_cap_exists<LOY>(partner);
       assert!(exists == true, 0);
       test_scenario::return_shared(partner_board);
     };

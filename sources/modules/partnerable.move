@@ -5,10 +5,8 @@ module loyaltychain::partnerable {
   use sui::transfer;
   use sui::dynamic_object_field;
   use sui::event;
-  use sui::coin::{TreasuryCap};
 
   use std::string::{ String};
-  use loyaltychain::util;
 
   struct PartnerBoard has key, store {
     id: UID,
@@ -241,22 +239,6 @@ module loyaltychain::partnerable {
     true
   }
 
-  public fun receive_treasury_cap<Token>(treasury_cap: TreasuryCap<Token>, partner_code: String, partner_board: &mut PartnerBoard) {
-    let token_name = util::get_name_as_string<Token>();
-    let partner = borrow_mut_parter_by_code(partner_code, partner_board);
-    dynamic_object_field::add<String, TreasuryCap<Token>>(&mut partner.id, token_name, treasury_cap);
-  }
-
-  // Treasury Helper
-  public fun borrow_mut_treasury_cap<Token>(partner: &mut Partner): &mut TreasuryCap<Token> {
-    let token_name = util::get_name_as_string<Token>();
-    dynamic_object_field::borrow_mut<String, TreasuryCap<Token>>(&mut partner.id, token_name)
-  }
-
-  public fun treasury_cap_exists<Token>(partner: &Partner): bool {
-    let token_name = util::get_name_as_string<Token>();
-    dynamic_object_field::exists_<String>(&partner.id, token_name)
-  }
 
   // Helper boards
   public fun partners_count(partner_board: &PartnerBoard): u64 {
@@ -295,6 +277,10 @@ module loyaltychain::partnerable {
 
   public fun borrow_mut_partner_id(partner: &mut Partner): &mut UID {
     &mut partner.id
+  }
+
+  public fun borrow_partner_id(partner: &Partner): &UID {
+    &partner.id
   }
 
   public fun partner_name(partner: &Partner): String {

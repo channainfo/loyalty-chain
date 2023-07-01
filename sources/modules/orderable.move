@@ -5,6 +5,7 @@ module loyaltychain::orderable {
 
   use loyaltychain::memberable::{Self, MemberBoard, Member};
   use loyaltychain::partnerable::{Self,PartnerBoard, Partner};
+  use loyaltychain::partner_treasury;
   use loyaltychain::member_nft;
   use loyaltychain::member_token;
   use loyaltychain::token_managable;
@@ -30,12 +31,12 @@ module loyaltychain::orderable {
     ctx: &mut TxContext){
 
     let partner: &mut Partner = partnerable::borrow_mut_parter_by_code(partner_code, partner_board );
-    assert!(partnerable::treasury_cap_exists<Token>(partner) == true, 0);
+    assert!(partner_treasury::treasury_cap_exists<Token>(partner) == true, 0);
 
     let token_name = partnerable::partner_token_name(partner);
     let token_sym = util::get_name_as_string<Token>();
 
-    let treasury_cap = partnerable::borrow_mut_treasury_cap<Token>(partner);
+    let treasury_cap = partner_treasury::borrow_mut_treasury_cap<Token>(partner);
     assert!(token_name == token_sym, 0);
 
     let member: &mut Member = memberable::borrow_mut_member_by_email(member_board, &member_email);
