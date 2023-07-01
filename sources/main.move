@@ -4,10 +4,10 @@ module loyaltychain::main{
   use sui::object::{ID};
 
   use loyaltychain::cap::{Self, AdminCap};
-  use loyaltychain::partnerable::{Self, PartnerBoard, CompanyBoard, Partner};
+  use loyaltychain::partner::{Self, PartnerBoard, CompanyBoard, Partner};
   use loyaltychain::partner_treasury;
   use loyaltychain::partner_nft;
-  use loyaltychain::memberable::{Self, MemberBoard, Member};
+  use loyaltychain::member::{Self, MemberBoard, Member};
   use loyaltychain::member_nft;
   use loyaltychain::member_token;
   use loyaltychain::nft::{Self, NFTCard};
@@ -17,8 +17,8 @@ module loyaltychain::main{
   // Trigger when package is published
   fun init(ctx: &mut TxContext){
     cap::init_create_admin_cap(ctx);
-    partnerable::init_create_boards(ctx);
-    memberable::init_create_member_board(ctx);
+    partner::init_create_boards(ctx);
+    member::init_create_member_board(ctx);
   }
 
   // custody
@@ -36,7 +36,7 @@ module loyaltychain::main{
     partner_board: &mut PartnerBoard,
     ctx: &mut TxContext){
 
-    partnerable::register_partner(
+    partner::register_partner(
       name,
       code,
       excerpt,
@@ -65,7 +65,7 @@ module loyaltychain::main{
     partner_board: &mut PartnerBoard,
     ctx: &mut TxContext){
 
-    partnerable::register_company(
+    partner::register_company(
       name,
       code,
       excerpt,
@@ -93,7 +93,7 @@ module loyaltychain::main{
 
     let partner_address = tx_context::sender(ctx);
 
-    partnerable::register_company(
+    partner::register_company(
       name,
       code,
       excerpt,
@@ -116,7 +116,7 @@ module loyaltychain::main{
     board: &mut MemberBoard,
     ctx: &mut TxContext){
 
-    memberable::register_member(
+    member::register_member(
       nick_name,
       email,
       owner,
@@ -133,7 +133,7 @@ module loyaltychain::main{
     ctx: &mut TxContext){
 
     let owner = tx_context::sender(ctx);
-    memberable::register_member(
+    member::register_member(
       nick_name,
       email,
       owner,

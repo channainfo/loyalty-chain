@@ -5,7 +5,7 @@ module loyaltychain::partner_nft {
 
   use std::string::{String};
   use std::option::{Self, Option};
-  use loyaltychain::partnerable::{Self, Partner};
+  use loyaltychain::partner::{Self, Partner};
   use loyaltychain::nft::{Self, NFTCard};
 
   struct PartnerNFTCardCreatedEvent has copy, drop {
@@ -55,8 +55,8 @@ module loyaltychain::partner_nft {
 
     let partner_id = object::id(partner);
 
-    // assert!(partnerable::partner_owner_address(partner) == sender, 0);
-    if(partnerable::partner_owner_address(partner) != partner_address) {
+    // assert!(partner::partner_owner_address(partner) == sender, 0);
+    if(partner::partner_owner_address(partner) != partner_address) {
       return option::none<NFTCard>()
     };
 
@@ -140,7 +140,7 @@ module loyaltychain::partner_nft {
     ctx: &mut TxContext){
 
     let sender = tx_context::sender(ctx);
-    assert!(partnerable::partner_owner_address(partner) == sender, 0);
+    assert!(partner::partner_owner_address(partner) == sender, 0);
 
     let mut_card_tier = nft::borrow_mut_card_tier_by_name(card_tier_name, partner);
     let mut_card_type = nft::borrow_mut_card_type_by_name(card_type_name, mut_card_tier);

@@ -6,7 +6,7 @@ module loyaltychain::member_token {
   use sui::event;
   use sui::coin::{Self, Coin};
   use loyaltychain::util;
-  use loyaltychain::memberable::{Self, Member};
+  use loyaltychain::member::{Self, Member};
 
   struct MemberReceivedCoinEvent has copy, drop {
     coin_type: vector<u8>,
@@ -31,7 +31,7 @@ module loyaltychain::member_token {
     let amount = coin::value(&coin);
     let received_at = tx_context::epoch(ctx);
     let coin_type = util::get_name_as_bytes<T>();
-    let member_uid = memberable::borrow_mut_id(member);
+    let member_uid = member::borrow_mut_id(member);
 
     let from_amount = if(dynamic_object_field::exists_(member_uid, coin_type)) {
       let existing_coin = dynamic_object_field::borrow_mut(member_uid, coin_type);
@@ -56,8 +56,8 @@ module loyaltychain::member_token {
   }
 
   public fun split_coin<T>(value: u64, member: &mut Member, ctx: &mut TxContext): Coin<T>{
-    assert!(memberable::member_owner(member) == tx_context::sender(ctx), 0);
-    let member_uid = memberable::borrow_mut_id(member);
+    assert!(member::member_owner(member) == tx_context::sender(ctx), 0);
+    let member_uid = member::borrow_mut_id(member);
 
     let coin_type = util::get_name_as_bytes<T>();
     let coin_exist = dynamic_object_field::exists_(member_uid, coin_type);
@@ -77,7 +77,7 @@ module loyaltychain::member_token {
     ctx: &mut TxContext) {
 
     let sender = tx_context::sender(ctx);
-    assert!(memberable::member_owner(member) == sender, 0);
+    assert!(member::member_owner(member) == sender, 0);
 
     let split_coin = split_coin<T>(value, member, ctx);
 
@@ -98,13 +98,13 @@ module loyaltychain::member_token {
   }
 
   public fun borrow_coin_by_coin_type<T>(member: &Member, coin_type: vector<u8>): &Coin<T> {
-    let member_uid = memberable::borrow_id(member);
+    let member_uid = member::borrow_id(member);
     let existing_coin = dynamic_object_field::borrow(member_uid, coin_type);
     existing_coin
   }
 
   public fun borrow_mut_coin_by_coin_type<T>(member: &mut Member, coin_type: vector<u8>): &mut Coin<T> {
-    let member_uid = memberable::borrow_mut_id(member);
+    let member_uid = member::borrow_mut_id(member);
 
     let existing_coin = dynamic_object_field::borrow_mut(member_uid, coin_type);
     existing_coin

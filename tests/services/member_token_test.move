@@ -7,7 +7,7 @@ module loyaltychain::member_token_test {
     use sui::sui::{SUI};
 
     use loyaltychain::loy::{LOY};
-    use loyaltychain::memberable::{Self, MemberBoard};
+    use loyaltychain::member::{Self, MemberBoard};
     use loyaltychain::member_token;
     use loyaltychain::util;
     use std::string::{Self, String};
@@ -21,7 +21,7 @@ module loyaltychain::member_token_test {
     // setup member_board
     {
       let ctx = test_scenario::ctx(&mut scenario);
-      memberable::init_create_member_board(ctx);
+      member::init_create_member_board(ctx);
     };
 
     // Start creating membership
@@ -29,7 +29,7 @@ module loyaltychain::member_token_test {
     {
       let board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
-      let result = memberable::register_member(nick_name, email, owner, &mut board, ctx);
+      let result = member::register_member(nick_name, email, owner, &mut board, ctx);
 
       // expect registration to be successful
       assert!(result == true, 0);
@@ -41,7 +41,7 @@ module loyaltychain::member_token_test {
     let (metadata_loy, metadata_sui) = {
 
       let board = test_scenario::take_shared(&scenario);
-      let member = memberable::borrow_mut_member_by_email(&mut board, &email);
+      let member = member::borrow_mut_member_by_email(&mut board, &email);
 
       let ctx = test_scenario::ctx(&mut scenario);
       let amount_coin1 = coin::mint_for_testing<LOY>(1000u64, ctx);
@@ -67,7 +67,7 @@ module loyaltychain::member_token_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let board = test_scenario::take_shared(&scenario);
-      let member = memberable::borrow_mut_member_by_email(&mut board, &email);
+      let member = member::borrow_mut_member_by_email(&mut board, &email);
 
       let coin_loy: &Coin<LOY> = member_token::borrow_coin_by_coin_type<LOY>(member, metadata_loy);
       let coin_sui: &Coin<SUI> = member_token::borrow_coin_by_coin_type<SUI>(member, metadata_sui);
@@ -88,7 +88,7 @@ module loyaltychain::member_token_test {
 
     use loyaltychain::loy::{LOY};
     use loyaltychain::util;
-    use loyaltychain::memberable::{Self, MemberBoard};
+    use loyaltychain::member::{Self, MemberBoard};
     use loyaltychain::member_token;
 
     use std::string::{Self, String};
@@ -102,7 +102,7 @@ module loyaltychain::member_token_test {
     // setup member_board
     {
       let ctx = test_scenario::ctx(&mut scenario);
-      memberable::init_create_member_board(ctx);
+      member::init_create_member_board(ctx);
     };
 
     // Start creating membership
@@ -110,7 +110,7 @@ module loyaltychain::member_token_test {
     {
       let board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
-      let result = memberable::register_member(nick_name, email, owner, &mut board, ctx);
+      let result = member::register_member(nick_name, email, owner, &mut board, ctx);
 
       // expect registration to be successful
       assert!(result == true, 0);
@@ -122,7 +122,7 @@ module loyaltychain::member_token_test {
     let (metadata_loy, metadata_sui) = {
 
       let board = test_scenario::take_shared(&scenario);
-      let member = memberable::borrow_mut_member_by_email(&mut board, &email);
+      let member = member::borrow_mut_member_by_email(&mut board, &email);
 
       let ctx = test_scenario::ctx(&mut scenario);
       let amount_coin1 = coin::mint_for_testing<LOY>(1000u64, ctx);
@@ -148,7 +148,7 @@ module loyaltychain::member_token_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let board = test_scenario::take_shared(&scenario);
-      let member = memberable::borrow_mut_member_by_email(&mut board, &email);
+      let member = member::borrow_mut_member_by_email(&mut board, &email);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let coin_loy: Coin<LOY> = member_token::split_coin<LOY>(1500, member, ctx);
@@ -167,7 +167,7 @@ module loyaltychain::member_token_test {
     test_scenario::next_tx(&mut scenario, owner);
     {
       let board = test_scenario::take_shared(&scenario);
-      let member = memberable::borrow_mut_member_by_email(&mut board, &email);
+      let member = member::borrow_mut_member_by_email(&mut board, &email);
 
       let coin_loy: &Coin<LOY> = member_token::borrow_coin_by_coin_type<LOY>(member, metadata_loy);
       let coin_sui: &Coin<SUI> = member_token::borrow_coin_by_coin_type<SUI>(member, metadata_sui);
@@ -189,7 +189,7 @@ module loyaltychain::member_token_test {
 
     use loyaltychain::loy::{LOY};
     use loyaltychain::util;
-    use loyaltychain::memberable::{Self, MemberBoard};
+    use loyaltychain::member::{Self, MemberBoard};
     use loyaltychain::member_token;
 
     use std::string::{Self, String};
@@ -207,7 +207,7 @@ module loyaltychain::member_token_test {
     // setup member_board
     {
       let ctx = test_scenario::ctx(&mut scenario);
-      memberable::init_create_member_board(ctx);
+      member::init_create_member_board(ctx);
     };
 
     // Start creating membership
@@ -215,7 +215,7 @@ module loyaltychain::member_token_test {
     {
       let board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
-      let result1 = memberable::register_member(member_nick_name1, member_email1, member_address1, &mut board, ctx);
+      let result1 = member::register_member(member_nick_name1, member_email1, member_address1, &mut board, ctx);
 
       // expect registration to be successful
       assert!(result1 == true, 0);
@@ -227,7 +227,7 @@ module loyaltychain::member_token_test {
     {
       let board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
-      let result2 = memberable::register_member(member_nick_name2, member_email2, member_address2, &mut board, ctx);
+      let result2 = member::register_member(member_nick_name2, member_email2, member_address2, &mut board, ctx);
 
       // expect registration to be successful
       assert!(result2 == true, 0);
@@ -239,7 +239,7 @@ module loyaltychain::member_token_test {
     let (metadata_loy, metadata_sui) = {
 
       let board = test_scenario::take_shared(&scenario);
-      let member1 = memberable::borrow_mut_member_by_email(&mut board, &member_email1);
+      let member1 = member::borrow_mut_member_by_email(&mut board, &member_email1);
 
       let ctx = test_scenario::ctx(&mut scenario);
       let amount_coin1 = coin::mint_for_testing<LOY>(1000u64, ctx);
@@ -265,7 +265,7 @@ module loyaltychain::member_token_test {
     test_scenario::next_tx(&mut scenario, member_address1);
     {
       let board = test_scenario::take_shared(&scenario);
-      let member1 = memberable::borrow_mut_member_by_email(&mut board, &member_email1);
+      let member1 = member::borrow_mut_member_by_email(&mut board, &member_email1);
       let ctx = test_scenario::ctx(&mut scenario);
 
       member_token::split_and_transfer_coin<LOY>(1700, member1, member_address2, ctx);
@@ -278,7 +278,7 @@ module loyaltychain::member_token_test {
     test_scenario::next_tx(&mut scenario, member_address1);
     {
       let board = test_scenario::take_shared(&scenario);
-      let member1 = memberable::borrow_mut_member_by_email(&mut board, &member_email1);
+      let member1 = member::borrow_mut_member_by_email(&mut board, &member_email1);
 
       let coin_loy: &Coin<LOY> = member_token::borrow_coin_by_coin_type<LOY>(member1, metadata_loy);
       let coin_sui: &Coin<SUI> = member_token::borrow_coin_by_coin_type<SUI>(member1, metadata_sui);
@@ -293,7 +293,7 @@ module loyaltychain::member_token_test {
     test_scenario::next_tx(&mut scenario, member_address2);
     {
       let board = test_scenario::take_shared(&scenario);
-      let member2 = memberable::borrow_mut_member_by_email(&mut board, &member_email2);
+      let member2 = member::borrow_mut_member_by_email(&mut board, &member_email2);
 
 
       let coin_loy = test_scenario::take_from_address<Coin<LOY>>(&scenario, member_address2);
@@ -312,7 +312,7 @@ module loyaltychain::member_token_test {
     test_scenario::next_tx(&mut scenario, member_address2);
     {
       let board = test_scenario::take_shared(&scenario);
-      let member2 = memberable::borrow_mut_member_by_email(&mut board, &member_email2);
+      let member2 = member::borrow_mut_member_by_email(&mut board, &member_email2);
 
       let coin_loy: &Coin<LOY> = member_token::borrow_coin_by_coin_type<LOY>(member2, metadata_loy);
       let coin_sui: &Coin<SUI> = member_token::borrow_coin_by_coin_type<SUI>(member2, metadata_sui);
