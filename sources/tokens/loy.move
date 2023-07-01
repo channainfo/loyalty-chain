@@ -156,6 +156,7 @@ module loyaltychain::loy {
     use loyaltychain::member_nft;
     use loyaltychain::member_token;
     use loyaltychain::partner_treasury;
+    use loyaltychain::partner_nft;
     use loyaltychain::nft::{Self, NFTCard};
     use loyaltychain::loy::{LOY};
     use loyaltychain::util;
@@ -284,13 +285,13 @@ module loyaltychain::loy {
       let partner :&mut Partner = partnerable::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = nft::mint_card(tier_name, type_name, partner_address, partner, ctx);
+      let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, partner_address, partner, ctx);
 
       assert!(option::is_some<NFTCard>(&nft_cardable) == true, 0);
 
       let nft_card = option::destroy_some<NFTCard>(nft_cardable);
       let nft_card_id = object::id(&nft_card);
-      nft::transfer_card(nft_card, receiver);
+      partner_nft::transfer_card(nft_card, receiver);
 
       test_scenario::return_shared<PartnerBoard>(partner_board);
       nft_card_id
