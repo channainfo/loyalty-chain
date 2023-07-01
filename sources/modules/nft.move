@@ -182,7 +182,6 @@ module loyaltychain::nft {
     ctx: &mut TxContext) {
 
     let nft_cardable = mint_card(card_tier_name, card_type_name, partner_address, partner, ctx);
-
     let nft_card = option::destroy_some<NFTCard>(nft_cardable);
 
     let receive_event = NFTCardReceivedEvent{

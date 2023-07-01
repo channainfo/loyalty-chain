@@ -9,8 +9,6 @@ module loyaltychain::partnerable {
 
   use std::string::{ String};
   use loyaltychain::util;
-  // use loyaltychain::memberable::{Self, Member};
-  // use loyaltychain::nft::{Self};
 
   struct PartnerBoard has key, store {
     id: UID,

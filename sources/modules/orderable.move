@@ -5,6 +5,8 @@ module loyaltychain::orderable {
 
   use loyaltychain::memberable::{Self, MemberBoard, Member};
   use loyaltychain::partnerable::{Self,PartnerBoard, Partner};
+  use loyaltychain::member_nft;
+  use loyaltychain::member_token;
   use loyaltychain::token_managable;
   use loyaltychain::nft;
   use loyaltychain::util;
@@ -37,11 +39,11 @@ module loyaltychain::orderable {
     assert!(token_name == token_sym, 0);
 
     let member: &mut Member = memberable::borrow_mut_member_by_email(member_board, &member_email);
-    let nft_card = memberable::borrow_mut_nft_card_by_id(member, nft_card_id);
+    let nft_card = member_nft::borrow_mut_nft_card_by_id(member, nft_card_id);
     let value = nft::use_card(nft_card);
     let coin = token_managable::mint<Token>(treasury_cap, value, ctx);
 
-    memberable::receive_coin(member, coin, ctx);
+    member_token::receive_coin(member, coin, ctx);
 
     let created_at = tx_context::epoch(ctx);
     let completed_order_event = CompletedOrderEvent {

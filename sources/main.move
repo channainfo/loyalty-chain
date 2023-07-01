@@ -6,6 +6,8 @@ module loyaltychain::main{
   use loyaltychain::cap::{Self, AdminCap};
   use loyaltychain::partnerable::{Self, PartnerBoard, CompanyBoard, Partner};
   use loyaltychain::memberable::{Self, MemberBoard, Member};
+  use loyaltychain::member_nft;
+  use loyaltychain::member_token;
   use loyaltychain::nft::{Self, NFTCard};
 
   use std::string::{String};
@@ -277,7 +279,7 @@ module loyaltychain::main{
     coin: Coin<T>,
     ctx: &TxContext){
 
-    memberable::receive_coin<T>(member, coin, ctx);
+    member_token::receive_coin<T>(member, coin, ctx);
   }
 
   // self custody member
@@ -287,7 +289,7 @@ module loyaltychain::main{
     receiver_address: address,
     ctx: &mut TxContext){
 
-    memberable::split_and_transfer_coin<T>(
+    member_token::split_and_transfer_coin<T>(
       value,
       member,
       receiver_address,
@@ -297,7 +299,7 @@ module loyaltychain::main{
 
   // self costody member
   public entry fun member_claim_nft_card(member: &mut Member, nft_card: NFTCard, ctx: &mut TxContext){
-    memberable::receive_nft_card(member, nft_card, ctx);
+    member_nft::receive_nft_card(member, nft_card, ctx);
   }
 
   public entry fun member_transfer_nft_card(
@@ -306,7 +308,7 @@ module loyaltychain::main{
     receiver_address: address,
     ctx: &mut TxContext){
 
-    memberable::take_and_transfer_nft_card(member, nft_card_id, receiver_address, ctx);
+    member_nft::take_and_transfer_nft_card(member, nft_card_id, receiver_address, ctx);
   }
 
   public entry fun transfer_treasury_cap<Token>(

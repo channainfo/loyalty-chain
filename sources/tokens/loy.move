@@ -153,6 +153,8 @@ module loyaltychain::loy {
     use loyaltychain::orderable;
     use loyaltychain::partnerable::{Self, PartnerBoard, Partner,};
     use loyaltychain::memberable::{Self, MemberBoard};
+    use loyaltychain::member_nft;
+    use loyaltychain::member_token;
     use loyaltychain::nft::{Self, NFTCard};
     use loyaltychain::loy::{LOY};
     use loyaltychain::util;
@@ -301,7 +303,7 @@ module loyaltychain::loy {
       let nft_card = test_scenario::take_from_address<NFTCard>(&mut scenario, member_address);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      memberable::receive_nft_card(member, nft_card, ctx);
+      member_nft::receive_nft_card(member, nft_card, ctx);
 
       test_scenario::return_shared(member_board);
     };
@@ -355,7 +357,7 @@ module loyaltychain::loy {
       let member = memberable::borrow_mut_member_by_email(&mut board, &member_email);
       let metadata_loy = util::get_name_as_bytes<LOY>();
 
-      let coin_loy: &Coin<LOY> = memberable::borrow_coin_by_coin_type<LOY>(member, metadata_loy);
+      let coin_loy: &Coin<LOY> = member_token::borrow_coin_by_coin_type<LOY>(member, metadata_loy);
 
       assert!(coin::value(coin_loy) == tier_benefit, 0);
 
@@ -367,7 +369,7 @@ module loyaltychain::loy {
     {
       let board = test_scenario::take_shared(&scenario);
       let member = memberable::borrow_mut_member_by_email(&mut board, &member_email);
-      let nft_card = memberable::borrow_mut_nft_card_by_id(member, nft_card_id);
+      let nft_card = member_nft::borrow_mut_nft_card_by_id(member, nft_card_id);
 
       let accumulated_value = nft::card_accumulated_value(nft_card);
       assert!(accumulated_value == tier_benefit, 0);
