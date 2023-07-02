@@ -1,5 +1,5 @@
 #[test_only]
-module loyaltychain::partner_token {
+module loychain::partner_token {
   use sui::tx_context::{Self, TxContext};
   use sui::coin::{Self,};
   use sui::transfer;

@@ -1,10 +1,10 @@
-module loyaltychain::partner_treasury {
+module loychain::partner_treasury {
   use sui::dynamic_object_field;
   use sui::coin::{TreasuryCap};
 
   use std::string::{ String};
-  use loyaltychain::partner::{Self, Partner, PartnerBoard};
-  use loyaltychain::util;
+  use loychain::partner::{Self, Partner, PartnerBoard};
+  use loychain::util;
 
 
   public fun receive_treasury_cap<Token>(treasury_cap: TreasuryCap<Token>, partner_code: String, partner_board: &mut PartnerBoard) {

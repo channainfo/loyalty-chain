@@ -1,5 +1,5 @@
 #[test_only]
-module loyaltychain::partner_test {
+module loychain::partner_test {
 
 
   #[test]
@@ -7,7 +7,7 @@ module loyaltychain::partner_test {
 
     use sui::test_scenario;
 
-    use loyaltychain::partner::{Self, PartnerBoard, CompanyBoard};
+    use loychain::partner::{Self, PartnerBoard, CompanyBoard};
 
     let owner = @0001;
     let scenario = test_scenario::begin(owner);
@@ -45,7 +45,7 @@ module loyaltychain::partner_test {
     use sui::object;
 
     use std::string::{Self};
-    use loyaltychain::partner::{Self, PartnerBoard, Partner, PartnerCap};
+    use loychain::partner::{Self, PartnerBoard, Partner, PartnerCap};
 
     let owner = @0x0001;
     let name = string::utf8(b"CM Market");
@@ -134,7 +134,7 @@ module loyaltychain::partner_test {
     use sui::test_scenario;
     use sui::object::{Self};
     use std::string::{Self};
-    use loyaltychain::partner::{Self, CompanyBoard, PartnerBoard};
+    use loychain::partner::{Self, CompanyBoard, PartnerBoard};
 
     let owner = @0001;
 

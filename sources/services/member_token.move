@@ -1,12 +1,12 @@
-module loyaltychain::member_token {
+module loychain::member_token {
   use sui::tx_context::{Self, TxContext};
   use sui::transfer::{Self};
   use sui::object::{Self, ID};
   use sui::dynamic_object_field;
   use sui::event;
   use sui::coin::{Self, Coin};
-  use loyaltychain::util;
-  use loyaltychain::member::{Self, Member};
+  use loychain::util;
+  use loychain::member::{Self, Member};
 
   struct MemberReceivedCoinEvent has copy, drop {
     coin_type: vector<u8>,

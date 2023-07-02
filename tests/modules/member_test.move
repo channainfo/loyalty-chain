@@ -1,9 +1,9 @@
 #[test_only]
-module loyaltychain::member_test {
+module loychain::member_test {
 
   #[test]
   public fun test_init_create_member_board(){
-    use loyaltychain::member::{Self, MemberBoard};
+    use loychain::member::{Self, MemberBoard};
     use sui::test_scenario;
 
     let owner = @0001;
@@ -29,12 +29,12 @@ module loyaltychain::member_test {
     use sui::test_scenario;
     use sui::address;
 
-    use loyaltychain::member::{Self, MemberBoard};
+    use loychain::member::{Self, MemberBoard};
 
     use std::string::{Self, String};
 
     let owner = @0001;
-    let email: String = string::utf8(b"admin@loyaltychain.org");
+    let email: String = string::utf8(b"admin@loychain.org");
     let nick_name: String = string::utf8(b"Scoth");
 
     let scenario = test_scenario::begin(owner);
@@ -68,7 +68,8 @@ module loyaltychain::member_test {
 
       let member = member::borrow_member_by_email(&board, &email);
 
-      let expected_code = address::to_bytes(@0xe5a73b66c2a07822c54b4b46241e07c04a7b7926029ae14ab93a915f4b38a087);
+      let expected_code = address::to_bytes(@0x6abe9d2d37d5e8018c81b90bcbb17f910e3b8be01fadf49d04acd0370621e478);
+
       assert!(member::member_nick_name(member) == nick_name, 0);
       assert!(member::member_code(member) == expected_code, 0);
       assert!(member::member_owner(member)== owner, 0);
