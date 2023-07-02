@@ -1,16 +1,16 @@
-module loyaltychain::main{
+module loychain::main{
   use sui::tx_context::{Self, TxContext};
   use sui::coin::{Coin, TreasuryCap};
   use sui::object::{ID};
 
-  use loyaltychain::cap::{Self, AdminCap};
-  use loyaltychain::partner::{Self, PartnerBoard, CompanyBoard, Partner};
-  use loyaltychain::partner_treasury;
-  use loyaltychain::partner_nft;
-  use loyaltychain::member::{Self, MemberBoard, Member};
-  use loyaltychain::member_nft;
-  use loyaltychain::member_token;
-  use loyaltychain::nft::{Self, NFTCard};
+  use loychain::cap::{Self, AdminCap};
+  use loychain::partner::{Self, PartnerBoard, CompanyBoard, Partner};
+  use loychain::partner_treasury;
+  use loychain::partner_nft;
+  use loychain::member::{Self, MemberBoard, Member};
+  use loychain::member_nft;
+  use loychain::member_token;
+  use loychain::nft::{Self, NFTCard};
 
   use std::string::{String};
 

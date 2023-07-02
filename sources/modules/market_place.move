@@ -1,11 +1,11 @@
-module loyaltychain::market_place {
+module loychain::market_place {
   use sui::object::{Self, UID, ID};
   use sui::tx_context::{Self, TxContext};
   use sui::transfer;
   use sui::dynamic_object_field;
   use sui::coin::{Self, Coin};
 
-  use loyaltychain::util;
+  use loychain::util;
 
   struct MarketPlaceBoard has key, store {
     id: UID,

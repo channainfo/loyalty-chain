@@ -1,4 +1,4 @@
-module loyaltychain::cap {
+module loychain::cap {
   use sui::object::{Self, UID};
   use sui::tx_context::{Self, TxContext};
   use sui::transfer::transfer;

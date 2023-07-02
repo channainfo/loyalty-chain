@@ -1,4 +1,4 @@
-module loyaltychain::token_managable {
+module loychain::token_managable {
 
   use sui::coin::{Self, TreasuryCap, Coin};
   use sui::tx_context::{TxContext};

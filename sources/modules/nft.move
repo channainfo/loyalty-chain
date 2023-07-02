@@ -1,4 +1,4 @@
-module loyaltychain::nft {
+module loychain::nft {
 
   use sui::object::{Self, UID, ID};
   use sui::tx_context::{Self, TxContext};
@@ -9,8 +9,8 @@ module loyaltychain::nft {
 
   use std::string::{String};
   use std::option::{Option};
-  use loyaltychain::partner::{Self, Partner};
-  use loyaltychain::util;
+  use loychain::partner::{Self, Partner};
+  use loychain::util;
 
   const ERROR_NOT_OWNER: u8 = 0;
 

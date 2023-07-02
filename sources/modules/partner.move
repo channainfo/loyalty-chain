@@ -1,4 +1,4 @@
-module loyaltychain::partner {
+module loychain::partner {
 
   use sui::object::{Self, UID, ID};
   use sui::tx_context::{Self, TxContext};

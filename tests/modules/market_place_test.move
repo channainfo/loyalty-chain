@@ -1,11 +1,11 @@
 #[test_only]
-module loyaltychain::market_place_test {
+module loychain::market_place_test {
 
   #[test]
   public fun test_init_create_market_place_board(){
     use sui::test_scenario;
 
-    use loyaltychain::market_place::{Self, MarketPlaceBoard};
+    use loychain::market_place::{Self, MarketPlaceBoard};
 
     let owner = @0x0001;
 
@@ -32,8 +32,8 @@ module loyaltychain::market_place_test {
 
     use sui::test_scenario;
 
-    use loyaltychain::market_place::{Self, MarketPlaceBoard};
-    use loyaltychain::loy::{LOY};
+    use loychain::market_place::{Self, MarketPlaceBoard};
+    use loychain::loy::{LOY};
 
     let owner = @0x0001;
 
@@ -85,8 +85,8 @@ module loyaltychain::market_place_test {
     use sui::test_scenario;
     use sui::object;
 
-    use loyaltychain::market_place::{Self, MarketPlaceBoard, ItemForTest};
-    use loyaltychain::loy::{LOY};
+    use loychain::market_place::{Self, MarketPlaceBoard, ItemForTest};
+    use loychain::loy::{LOY};
 
     let owner = @0x0001;
 
@@ -163,8 +163,8 @@ module loyaltychain::market_place_test {
     use sui::test_scenario;
     use sui::object;
 
-    use loyaltychain::market_place::{Self, MarketPlaceBoard, ItemForTest};
-    use loyaltychain::loy::{LOY};
+    use loychain::market_place::{Self, MarketPlaceBoard, ItemForTest};
+    use loychain::loy::{LOY};
 
     let owner = @0x0001;
 
@@ -241,8 +241,8 @@ module loyaltychain::market_place_test {
     use sui::test_scenario;
     use sui::object;
 
-    use loyaltychain::market_place::{Self, MarketPlaceBoard, ItemForTest};
-    use loyaltychain::loy::{LOY};
+    use loychain::market_place::{Self, MarketPlaceBoard, ItemForTest};
+    use loychain::loy::{LOY};
 
     let owner = @0x0001;
 
@@ -319,8 +319,8 @@ module loyaltychain::market_place_test {
     use sui::object;
     use sui::coin::{Self, Coin};
 
-    use loyaltychain::market_place::{Self, MarketPlaceBoard, ItemForTest};
-    use loyaltychain::loy::{LOY};
+    use loychain::market_place::{Self, MarketPlaceBoard, ItemForTest};
+    use loychain::loy::{LOY};
 
     let owner = @0x0001;
 

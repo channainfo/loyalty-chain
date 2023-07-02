@@ -1,19 +1,19 @@
 #[test_only]
-module loyaltychain::member_nft_test {
+module loychain::member_nft_test {
   #[test]
   public fun test_receive_nft_card(){
     use sui::test_scenario;
     use sui::object;
-    use loyaltychain::nft::{Self, NFTCard};
-    use loyaltychain::member::{Self, MemberBoard};
-    use loyaltychain::member_nft;
-    use loyaltychain::partner::{Self, PartnerBoard, Partner};
-    use loyaltychain::partner_nft;
+    use loychain::nft::{Self, NFTCard};
+    use loychain::member::{Self, MemberBoard};
+    use loychain::member_nft;
+    use loychain::partner::{Self, PartnerBoard, Partner};
+    use loychain::partner_nft;
     use std::string::{Self, String};
     use std::option::{Self, Option};
 
     let owner = @0001;
-    let email: String = string::utf8(b"admin@loyaltychain.org");
+    let email: String = string::utf8(b"admin@loychain.org");
     let nick_name: String = string::utf8(b"Scoth");
 
     let scenario = test_scenario::begin(owner);
@@ -67,7 +67,7 @@ module loyaltychain::member_nft_test {
      // Register a Card tier
     let tier_name = string::utf8(b"Bronze");
     let tier_description = string::utf8(b"Bronze Benefit");
-    let tier_image_url = string::utf8(b"https://loyaltychain.sui/nft/bronze");
+    let tier_image_url = string::utf8(b"https://loychain.sui/nft/bronze");
     let tier_benefit = 10;
     let tier_level = 0u8;
     let tier_required_value = 0u64;
@@ -97,7 +97,7 @@ module loyaltychain::member_nft_test {
 
     // Register Card type
     let type_name = string::utf8(b"Membership");
-    let type_image_url = string::utf8(b"https://loyaltychain.sui/nft/bronze/membership");
+    let type_image_url = string::utf8(b"https://loychain.sui/nft/bronze/membership");
     let max_supply = 1_000_000u64;
 
     test_scenario::next_tx(&mut scenario, owner);
@@ -160,16 +160,16 @@ module loyaltychain::member_nft_test {
   public fun test_take_nft_card(){
     use sui::test_scenario;
     use sui::object;
-    use loyaltychain::nft::{Self, NFTCard};
-    use loyaltychain::member::{Self, MemberBoard};
-    use loyaltychain::member_nft;
-    use loyaltychain::partner::{Self, PartnerBoard, Partner};
-    use loyaltychain::partner_nft;
+    use loychain::nft::{Self, NFTCard};
+    use loychain::member::{Self, MemberBoard};
+    use loychain::member_nft;
+    use loychain::partner::{Self, PartnerBoard, Partner};
+    use loychain::partner_nft;
     use std::string::{Self, String};
     use std::option::{Self, Option};
 
     let owner = @0001;
-    let email: String = string::utf8(b"admin@loyaltychain.org");
+    let email: String = string::utf8(b"admin@loychain.org");
     let nick_name: String = string::utf8(b"Scoth");
 
     let scenario = test_scenario::begin(owner);
@@ -223,7 +223,7 @@ module loyaltychain::member_nft_test {
      // Register a Card tier
     let tier_name = string::utf8(b"Bronze");
     let tier_description = string::utf8(b"Bronze Benefit");
-    let tier_image_url = string::utf8(b"https://loyaltychain.sui/nft/bronze");
+    let tier_image_url = string::utf8(b"https://loychain.sui/nft/bronze");
     let tier_benefit = 10;
     let tier_level = 0u8;
     let tier_required_value = 0u64;
@@ -253,7 +253,7 @@ module loyaltychain::member_nft_test {
 
     // Register Card type
     let type_name = string::utf8(b"Membership");
-    let type_image_url = string::utf8(b"https://loyaltychain.sui/nft/bronze/membership");
+    let type_image_url = string::utf8(b"https://loychain.sui/nft/bronze/membership");
     let max_supply = 1_000_000u64;
 
     test_scenario::next_tx(&mut scenario, owner);
@@ -316,16 +316,16 @@ module loyaltychain::member_nft_test {
   public fun take_and_transfer_nft_card(){
     use sui::test_scenario;
     use sui::object;
-    use loyaltychain::nft::{Self, NFTCard};
-    use loyaltychain::member::{Self, MemberBoard};
-    use loyaltychain::member_nft;
-    use loyaltychain::partner::{Self, PartnerBoard, Partner};
-    use loyaltychain::partner_nft;
+    use loychain::nft::{Self, NFTCard};
+    use loychain::member::{Self, MemberBoard};
+    use loychain::member_nft;
+    use loychain::partner::{Self, PartnerBoard, Partner};
+    use loychain::partner_nft;
     use std::string::{Self, String};
     use std::option::{Self, Option};
 
     let owner = @0001;
-    let email: String = string::utf8(b"admin@loyaltychain.org");
+    let email: String = string::utf8(b"admin@loychain.org");
     let nick_name: String = string::utf8(b"Scoth");
 
     let scenario = test_scenario::begin(owner);
@@ -379,7 +379,7 @@ module loyaltychain::member_nft_test {
      // Register a Card tier
     let tier_name = string::utf8(b"Bronze");
     let tier_description = string::utf8(b"Bronze Benefit");
-    let tier_image_url = string::utf8(b"https://loyaltychain.sui/nft/bronze");
+    let tier_image_url = string::utf8(b"https://loychain.sui/nft/bronze");
     let tier_benefit = 10;
     let tier_level = 0u8;
     let tier_required_value = 0u64;
@@ -409,7 +409,7 @@ module loyaltychain::member_nft_test {
 
     // Register Card type
     let type_name = string::utf8(b"Membership");
-    let type_image_url = string::utf8(b"https://loyaltychain.sui/nft/bronze/membership");
+    let type_image_url = string::utf8(b"https://loychain.sui/nft/bronze/membership");
     let max_supply = 1_000_000u64;
 
     test_scenario::next_tx(&mut scenario, owner);

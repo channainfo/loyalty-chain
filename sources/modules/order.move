@@ -1,16 +1,16 @@
-module loyaltychain::order {
+module loychain::order {
   use sui::tx_context::{Self, TxContext};
   use sui::object::{ID};
   use sui::event;
 
-  use loyaltychain::member::{Self, MemberBoard, Member};
-  use loyaltychain::partner::{Self,PartnerBoard, Partner};
-  use loyaltychain::partner_treasury;
-  use loyaltychain::member_nft;
-  use loyaltychain::member_token;
-  use loyaltychain::token_managable;
-  use loyaltychain::nft;
-  use loyaltychain::util;
+  use loychain::member::{Self, MemberBoard, Member};
+  use loychain::partner::{Self,PartnerBoard, Partner};
+  use loychain::partner_treasury;
+  use loychain::member_nft;
+  use loychain::member_token;
+  use loychain::token_managable;
+  use loychain::nft;
+  use loychain::util;
 
   use std::string::{String};
 

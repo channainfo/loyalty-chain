@@ -1,19 +1,19 @@
 #[test_only]
-module loyaltychain::member_token_test {
+module loychain::member_token_test {
   #[test]
   public fun test_receive_coin(){
     use sui::test_scenario;
     use sui::coin::{Self, Coin};
     use sui::sui::{SUI};
 
-    use loyaltychain::loy::{LOY};
-    use loyaltychain::member::{Self, MemberBoard};
-    use loyaltychain::member_token;
-    use loyaltychain::util;
+    use loychain::loy::{LOY};
+    use loychain::member::{Self, MemberBoard};
+    use loychain::member_token;
+    use loychain::util;
     use std::string::{Self, String};
 
     let owner = @0001;
-    let email: String = string::utf8(b"admin@loyaltychain.org");
+    let email: String = string::utf8(b"admin@loychain.org");
     let nick_name: String = string::utf8(b"Scoth");
 
     let scenario = test_scenario::begin(owner);
@@ -86,15 +86,15 @@ module loyaltychain::member_token_test {
     use sui::coin::{Self, Coin};
     use sui::sui::{SUI};
 
-    use loyaltychain::loy::{LOY};
-    use loyaltychain::util;
-    use loyaltychain::member::{Self, MemberBoard};
-    use loyaltychain::member_token;
+    use loychain::loy::{LOY};
+    use loychain::util;
+    use loychain::member::{Self, MemberBoard};
+    use loychain::member_token;
 
     use std::string::{Self, String};
 
     let owner = @0001;
-    let email: String = string::utf8(b"admin@loyaltychain.org");
+    let email: String = string::utf8(b"admin@loychain.org");
     let nick_name: String = string::utf8(b"Scoth");
 
     let scenario = test_scenario::begin(owner);
@@ -187,19 +187,19 @@ module loyaltychain::member_token_test {
     use sui::coin::{Self, Coin};
     use sui::sui::{SUI};
 
-    use loyaltychain::loy::{LOY};
-    use loyaltychain::util;
-    use loyaltychain::member::{Self, MemberBoard};
-    use loyaltychain::member_token;
+    use loychain::loy::{LOY};
+    use loychain::util;
+    use loychain::member::{Self, MemberBoard};
+    use loychain::member_token;
 
     use std::string::{Self, String};
 
     let member_address1 = @0001;
-    let member_email1: String = string::utf8(b"admin1@loyaltychain.org");
+    let member_email1: String = string::utf8(b"admin1@loychain.org");
     let member_nick_name1: String = string::utf8(b"Scoth2");
 
     let member_address2 = @0002;
-    let member_email2: String = string::utf8(b"admin2@loyaltychain.org");
+    let member_email2: String = string::utf8(b"admin2@loychain.org");
     let member_nick_name2: String = string::utf8(b"Scoth2");
 
     let scenario = test_scenario::begin(member_address1);

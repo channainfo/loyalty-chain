@@ -1,10 +1,10 @@
 #[test_only]
-module loyaltychain::cap_test {
+module loychain::cap_test {
 
   #[test]
   public fun test_init_create_admin_cap() {
     use sui::test_scenario;
-    use loyaltychain::cap::{Self, AdminCap};
+    use loychain::cap::{Self, AdminCap};
 
     let owner = @0x001;
     let scenario = test_scenario::begin(owner);

@@ -1,12 +1,12 @@
-module loyaltychain::partner_nft {
+module loychain::partner_nft {
   use sui::object::{Self, ID};
   use sui::tx_context::{Self, TxContext};
   use sui::event;
 
   use std::string::{String};
   use std::option::{Self, Option};
-  use loyaltychain::partner::{Self, Partner};
-  use loyaltychain::nft::{Self, NFTCard};
+  use loychain::partner::{Self, Partner};
+  use loychain::nft::{Self, NFTCard};
 
   struct PartnerNFTCardCreatedEvent has copy, drop {
     card_id: ID,

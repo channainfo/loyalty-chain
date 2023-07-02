@@ -1,4 +1,4 @@
-module loyaltychain::member {
+module loychain::member {
   use sui::tx_context::{Self, TxContext};
   use sui::transfer::{Self};
   use sui::object::{Self, UID, ID };
@@ -7,7 +7,7 @@ module loyaltychain::member {
 
   use std::string::{String};
 
-  use loyaltychain::util::{Self};
+  use loychain::util::{Self};
 
   const NFT_CARD_KEY: vector<u8> = b"nft_cards";
 

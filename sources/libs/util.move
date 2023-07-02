@@ -1,4 +1,4 @@
-module loyaltychain::util {
+module loychain::util {
   use sui::url::{Self, Url};
   use std::string:: {Self, String};
   use std::option::{Self, Option};
@@ -40,7 +40,7 @@ module loyaltychain::util {
     string::utf8(name)
   }
 
-  // let value = b"00000000000000000000000000000001::loyaltychain::loy::LOY";
+  // let value = b"00000000000000000000000000000001::loychain::loy::LOY";
   // let expected = b"LOY";
   public fun get_type_from_bytes(name: vector<u8>): vector<u8> {
     // https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/move-stdlib/sources/type_name.move#L11
