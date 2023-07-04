@@ -150,7 +150,7 @@ module loychain::loy {
     use sui::test_scenario;
     use sui::object::{Self};
     use sui::coin::{Self, Coin, TreasuryCap};
-    use loychain::order;
+    use loychain::partner_order;
     use loychain::partner::{Self, PartnerBoard, Partner,};
     use loychain::member::{Self, MemberBoard};
     use loychain::member_nft;
@@ -338,11 +338,12 @@ module loychain::loy {
       let member_board = test_scenario::take_shared<MemberBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      order::complete_order<LOY>(
+      partner_order::complete_order<LOY>(
         order_id,
         nft_card_id,
         member_email,
         &mut member_board,
+        partner_address,
         code,
         &mut partner_board,
         ctx
