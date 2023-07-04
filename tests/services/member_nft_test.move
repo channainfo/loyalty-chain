@@ -1,7 +1,7 @@
 #[test_only]
 module loychain::member_nft_test {
   #[test]
-  public fun test_receive_nft_card(){
+  public fun test_claim_nft_card(){
     use sui::test_scenario;
     use sui::object;
     use loychain::nft::{Self, NFTCard};
@@ -133,7 +133,7 @@ module loychain::member_nft_test {
       let nft_card = option::destroy_some<NFTCard>(nft_cardable);
       let nft_card_id = object::id(&nft_card);
 
-      member_nft::receive_nft_card(member, nft_card, ctx);
+      member_nft::claim_nft_card(member, nft_card, ctx);
 
       test_scenario::return_shared<MemberBoard>(board);
       test_scenario::return_shared<PartnerBoard>(partner_board);
@@ -289,7 +289,7 @@ module loychain::member_nft_test {
       let nft_card = option::destroy_some<NFTCard>(nft_cardable);
       let nft_card_id = object::id(&nft_card);
 
-      member_nft::receive_nft_card(member, nft_card, ctx);
+      member_nft::claim_nft_card(member, nft_card, ctx);
 
       test_scenario::return_shared<MemberBoard>(board);
       test_scenario::return_shared<PartnerBoard>(partner_board);
@@ -445,7 +445,7 @@ module loychain::member_nft_test {
       let nft_card = option::destroy_some<NFTCard>(nft_cardable);
       let nft_card_id = object::id(&nft_card);
 
-      member_nft::receive_nft_card(member, nft_card, ctx);
+      member_nft::claim_nft_card(member, nft_card, ctx);
 
       test_scenario::return_shared<MemberBoard>(board);
       test_scenario::return_shared<PartnerBoard>(partner_board);

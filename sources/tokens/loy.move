@@ -305,7 +305,7 @@ module loychain::loy {
       let nft_card = test_scenario::take_from_address<NFTCard>(&mut scenario, member_address);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      member_nft::receive_nft_card(member, nft_card, ctx);
+      member_nft::claim_nft_card(member, nft_card, ctx);
 
       test_scenario::return_shared(member_board);
     };

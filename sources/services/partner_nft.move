@@ -5,8 +5,15 @@ module loychain::partner_nft {
 
   use std::string::{String};
   use std::option::{Self, Option};
-  use loychain::partner::{Self, Partner};
+  use loychain::partner::{Self, Partner, PartnerBoard};
   use loychain::nft::{Self, NFTCard};
+
+  use loychain::member::{Self, MemberBoard, Member};
+  use loychain::member_nft;
+  use loychain::partner_nft;
+
+  const ERROR_NOT_PARTNER_ADDRESS: u64 = 0u64;
+  const ERROR_MAX_SUPPLY_REACHED: u64 = 1u64;
 
   struct PartnerNFTCardCreatedEvent has copy, drop {
     card_id: ID,
@@ -44,7 +51,6 @@ module loychain::partner_nft {
     issued_at: u64,
     burned_at: u64
   }
-
 
   public fun mint_card(
     card_tier_name: String,
@@ -140,7 +146,7 @@ module loychain::partner_nft {
     ctx: &mut TxContext){
 
     let sender = tx_context::sender(ctx);
-    assert!(partner::partner_owner_address(partner) == sender, 0);
+    assert!(partner::partner_owner_address(partner) == sender, ERROR_NOT_PARTNER_ADDRESS);
 
     let mut_card_tier = nft::borrow_mut_card_tier_by_name(card_tier_name, partner);
     let mut_card_type = nft::borrow_mut_card_type_by_name(card_type_name, mut_card_tier);
@@ -170,5 +176,37 @@ module loychain::partner_nft {
     receiver: address) {
     nft::transfer_card(nft_card, receiver);
 
+  }
+
+  public fun mint_and_tranfer_to_member(
+    card_tier_name: String,
+    card_type_name: String,
+    member_email: String,
+    member_board: &mut MemberBoard,
+    partner_address: address,
+    partner_code: String,
+    partner_board: &mut PartnerBoard,
+    ctx: &mut TxContext): ID{
+    let partner: &mut Partner = partner::borrow_mut_parter_by_code(partner_code, partner_board);
+
+    assert!(partner::partner_owner_address(partner) == partner_address, ERROR_NOT_PARTNER_ADDRESS);
+
+    let nft_cardable: Option<NFTCard> = partner_nft::mint_card(
+      card_tier_name,
+      card_type_name,
+      partner_address,
+      partner,
+      ctx
+    );
+
+    assert!(option::is_some<NFTCard>(&nft_cardable) == true, ERROR_MAX_SUPPLY_REACHED);
+
+    let nft_card = option::destroy_some<NFTCard>(nft_cardable);
+    let nft_card_id = object::id(&nft_card);
+    let member: &mut Member = member::borrow_mut_member_by_email(member_board, &member_email);
+
+    member_nft::receive_nft_card(member, nft_card, ctx);
+
+    nft_card_id
   }
 }

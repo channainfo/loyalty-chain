@@ -302,7 +302,7 @@ module loychain::main{
 
   // self costody member
   public entry fun member_claim_nft_card(member: &mut Member, nft_card: NFTCard, ctx: &mut TxContext){
-    member_nft::receive_nft_card(member, nft_card, ctx);
+    member_nft::claim_nft_card(member, nft_card, ctx);
   }
 
   public entry fun member_transfer_nft_card(
@@ -347,6 +347,53 @@ module loychain::main{
     ctx: &mut TxContext){
     let partner_address = tx_context::sender(ctx);
     partner_order::complete_order<Token>(order_id, nft_card_id, member_email, member_board, partner_address, partner_code, partner_board, ctx);
+  }
+
+  // custody
+  public fun admin_mint_and_tranfer_to_member(
+    _admin_cap: &AdminCap,
+    card_tier_name: String,
+    card_type_name: String,
+    member_email: String,
+    member_board: &mut MemberBoard,
+    partner_address: address,
+    partner_code: String,
+    partner_board: &mut PartnerBoard,
+    ctx: &mut TxContext
+  ){
+    partner_nft::mint_and_tranfer_to_member(
+      card_tier_name,
+      card_type_name,
+      member_email,
+      member_board,
+      partner_address,
+      partner_code,
+      partner_board,
+      ctx
+    );
+  }
+
+  // non-custody
+  public fun partner_mint_and_tranfer_to_member(
+    card_tier_name: String,
+    card_type_name: String,
+    member_email: String,
+    member_board: &mut MemberBoard,
+    partner_code: String,
+    partner_board: &mut PartnerBoard,
+    ctx: &mut TxContext
+  ){
+    let partner_address = tx_context::sender(ctx);
+    partner_nft::mint_and_tranfer_to_member(
+      card_tier_name,
+      card_type_name,
+      member_email,
+      member_board,
+      partner_address,
+      partner_code,
+      partner_board,
+      ctx
+    );
   }
 
 }

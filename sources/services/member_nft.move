@@ -27,9 +27,14 @@ module loychain::member_nft {
     created_at: u64
   }
 
-  public fun receive_nft_card(member: &mut Member, nft_card: NFTCard, ctx: &mut TxContext){
+  public fun claim_nft_card(member: &mut Member, nft_card: NFTCard, ctx: &mut TxContext){
     let sender_address = tx_context::sender(ctx);
     assert!(member::member_owner(member) == sender_address, 0);
+
+    receive_nft_card(member, nft_card, ctx);
+  }
+
+  public fun receive_nft_card(member: &mut Member, nft_card: NFTCard, ctx: &mut TxContext){
     let member_id = object::id(member);
     let member_uid = member::borrow_mut_id(member);
 
