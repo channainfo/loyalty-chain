@@ -7,6 +7,7 @@ module loychain::main{
   use loychain::partner::{Self, PartnerBoard, CompanyBoard, Partner};
   use loychain::partner_treasury;
   use loychain::partner_nft;
+  use loychain::partner_order;
   use loychain::member::{Self, MemberBoard, Member};
   use loychain::member_nft;
   use loychain::member_token;
@@ -319,6 +320,33 @@ module loychain::main{
     partner_code: String,
     partner_board: &mut PartnerBoard){
     partner_treasury::receive_treasury_cap<Token>(treasury_cap, partner_code, partner_board);
+  }
+
+  // customdy
+  public fun admin_complete_order<Token>(
+    _admin_cap: &AdminCap,
+    order_id: String,
+    nft_card_id: ID,
+    member_email: String,
+    member_board: &mut MemberBoard,
+    partner_address: address,
+    partner_code: String,
+    partner_board: &mut PartnerBoard,
+    ctx: &mut TxContext){
+    partner_order::complete_order<Token>(order_id, nft_card_id, member_email, member_board, partner_address, partner_code, partner_board, ctx);
+  }
+
+  // non-customdy
+  public fun partner_complete_order<Token>(
+    order_id: String,
+    nft_card_id: ID,
+    member_email: String,
+    member_board: &mut MemberBoard,
+    partner_code: String,
+    partner_board: &mut PartnerBoard,
+    ctx: &mut TxContext){
+    let partner_address = tx_context::sender(ctx);
+    partner_order::complete_order<Token>(order_id, nft_card_id, member_email, member_board, partner_address, partner_code, partner_board, ctx);
   }
 
 }

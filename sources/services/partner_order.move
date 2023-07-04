@@ -1,4 +1,4 @@
-module loychain::order {
+module loychain::partner_order {
   use sui::tx_context::{Self, TxContext};
   use sui::object::{ID};
   use sui::event;
@@ -14,10 +14,16 @@ module loychain::order {
 
   use std::string::{String};
 
-  struct CompletedOrderEvent has copy, drop {
+  const ERROR_NOT_PARTNER_ADDRESS: u64 = 1;
+  const ERROR_NO_TREASURY_CAP: u64 = 2;
+  const ERROR_INCORRECT_TOKEN_NAME: u64 = 3;
+
+
+  struct PartnerCompletedOrderEvent has copy, drop {
     order_id: String,
     token_earn: u64,
     owner: address,
+    partner_address: address,
     created_at: u64
   }
 
@@ -26,18 +32,21 @@ module loychain::order {
     nft_card_id: ID,
     member_email: String,
     member_board: &mut MemberBoard,
+    partner_address: address,
     partner_code: String,
     partner_board: &mut PartnerBoard,
     ctx: &mut TxContext){
 
     let partner: &mut Partner = partner::borrow_mut_parter_by_code(partner_code, partner_board );
-    assert!(partner_treasury::treasury_cap_exists<Token>(partner) == true, 0);
+
+    assert!(partner::partner_owner_address(partner) == partner_address, ERROR_NOT_PARTNER_ADDRESS);
+    assert!(partner_treasury::treasury_cap_exists<Token>(partner) == true, ERROR_NO_TREASURY_CAP);
 
     let token_name = partner::partner_token_name(partner);
     let token_sym = util::get_name_as_string<Token>();
 
     let treasury_cap = partner_treasury::borrow_mut_treasury_cap<Token>(partner);
-    assert!(token_name == token_sym, 0);
+    assert!(token_name == token_sym, ERROR_INCORRECT_TOKEN_NAME);
 
     let member: &mut Member = member::borrow_mut_member_by_email(member_board, &member_email);
     let nft_card = member_nft::borrow_mut_nft_card_by_id(member, nft_card_id);
@@ -47,10 +56,11 @@ module loychain::order {
     member_token::receive_coin(member, coin, ctx);
 
     let created_at = tx_context::epoch(ctx);
-    let completed_order_event = CompletedOrderEvent {
+    let completed_order_event = PartnerCompletedOrderEvent {
       order_id,
       token_earn: value,
       owner: member::member_owner(member),
+      partner_address,
       created_at
     };
 
