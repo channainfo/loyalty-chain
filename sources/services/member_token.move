@@ -8,6 +8,9 @@ module loychain::member_token {
   use loychain::util;
   use loychain::member::{Self, Member};
 
+  const ERROR_NOT_OWNER: u64 = 0u64;
+  const ERROR_COIN_NOT_EXIST: u64 = 1u64;
+
   struct MemberReceivedCoinEvent has copy, drop {
     coin_type: vector<u8>,
     member_id: ID,
@@ -56,12 +59,12 @@ module loychain::member_token {
   }
 
   public fun split_coin<T>(value: u64, member: &mut Member, ctx: &mut TxContext): Coin<T>{
-    assert!(member::member_owner(member) == tx_context::sender(ctx), 0);
+    assert!(member::member_owner(member) == tx_context::sender(ctx), ERROR_NOT_OWNER);
     let member_uid = member::borrow_mut_id(member);
 
     let coin_type = util::get_name_as_bytes<T>();
     let coin_exist = dynamic_object_field::exists_(member_uid, coin_type);
-    assert!(coin_exist, 0);
+    assert!(coin_exist, ERROR_COIN_NOT_EXIST);
 
     let whole_coin = dynamic_object_field::borrow_mut(member_uid, coin_type);
     let split_coin = coin::split<T>(whole_coin, value, ctx);
@@ -75,9 +78,6 @@ module loychain::member_token {
     member: &mut Member,
     receiver_address: address,
     ctx: &mut TxContext) {
-
-    let sender = tx_context::sender(ctx);
-    assert!(member::member_owner(member) == sender, 0);
 
     let split_coin = split_coin<T>(value, member, ctx);
 
