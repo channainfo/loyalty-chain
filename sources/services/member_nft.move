@@ -9,6 +9,7 @@ module loychain::member_nft {
   use loychain::nft::{ NFTCard};
 
   const NFT_CARD_KEY: vector<u8> = b"nft_cards";
+  const ERROR_NOT_OWNER: u64 = 0;
 
   struct MemberNFTCard has key, store {
     id: UID
@@ -29,7 +30,7 @@ module loychain::member_nft {
 
   public fun claim_nft_card(member: &mut Member, nft_card: NFTCard, ctx: &mut TxContext){
     let sender_address = tx_context::sender(ctx);
-    assert!(member::member_owner(member) == sender_address, 0);
+    assert!(member::member_owner(member) == sender_address, ERROR_NOT_OWNER);
 
     receive_nft_card(member, nft_card, ctx);
   }
@@ -74,7 +75,7 @@ module loychain::member_nft {
     ctx: &mut TxContext){
 
     let sender_address = tx_context::sender(ctx);
-    assert!(member::member_owner(member) == sender_address, 0);
+    assert!(member::member_owner(member) == sender_address, ERROR_NOT_OWNER);
 
     let nft_card = take_nft_card(member, nft_card_id);
     transfer::public_transfer(nft_card, receiver_address);
