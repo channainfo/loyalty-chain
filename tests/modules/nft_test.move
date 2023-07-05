@@ -302,7 +302,6 @@ module loychain::nft_test {
     use sui::test_scenario;
 
     use std::string::{Self};
-    use std::option::{Self, Option};
     use loychain::partner::{Self, PartnerBoard, Partner};
     use loychain::partner_nft;
     use loychain::nft::{Self, NFTCard};
@@ -400,11 +399,7 @@ module loychain::nft_test {
       let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
-
-      assert!(option::is_some<NFTCard>(&nft_cardable) == true, 0);
-
-      let nft_card = option::destroy_some<NFTCard>(nft_cardable);
+      let nft_card = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
       let card_benefit = nft::use_card(&mut nft_card);
 
       assert!(card_benefit == tier_benefit, 0);
