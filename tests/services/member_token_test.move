@@ -1,5 +1,7 @@
 #[test_only]
 module loychain::member_token_test {
+  use loychain::member_token;
+
   #[test]
   public fun test_receive_coin(){
     use sui::test_scenario;
@@ -81,7 +83,7 @@ module loychain::member_token_test {
   }
 
   #[test]
-  public fun test_split_coin(){
+  public fun test_split_coin_success(){
     use sui::test_scenario;
     use sui::coin::{Self, Coin};
     use sui::sui::{SUI};
@@ -178,6 +180,114 @@ module loychain::member_token_test {
       test_scenario::return_shared<MemberBoard>(board);
     };
 
+    test_scenario::end(scenario);
+  }
+
+  #[test]
+  #[expected_failure(abort_code=member_token::ERROR_NOT_OWNER)]
+  public fun test_split_coin_not_owner(){
+    use sui::test_scenario;
+
+    use loychain::loy::{LOY};
+    use loychain::member::{Self, MemberBoard};
+    use loychain::member_token;
+
+    use std::string::{Self, String};
+
+    let owner = @0001;
+    let email: String = string::utf8(b"admin@loychain.org");
+    let nick_name: String = string::utf8(b"Scoth");
+
+    let scenario = test_scenario::begin(owner);
+
+    // setup member_board
+    {
+      let ctx = test_scenario::ctx(&mut scenario);
+      member::init_create_member_board(ctx);
+    };
+
+    // Start creating membership
+    test_scenario::next_tx(&mut scenario, owner);
+    {
+      let board = test_scenario::take_shared<MemberBoard>(&scenario);
+      let ctx = test_scenario::ctx(&mut scenario);
+      let result = member::register_member(nick_name, email, owner, &mut board, ctx);
+
+      // expect registration to be successful
+      assert!(result == true, 0);
+      test_scenario::return_shared<MemberBoard>(board);
+    };
+
+    // Execution call
+    let ousider = @0x0004;
+    test_scenario::next_tx(&mut scenario, ousider);
+
+    test_scenario::next_tx(&mut scenario, ousider);
+    {
+      let board = test_scenario::take_shared(&scenario);
+      let member = member::borrow_mut_member_by_email(&mut board, &email);
+      let ctx = test_scenario::ctx(&mut scenario);
+
+      // this would fail eventually ERROR_NOT_OWNER
+      let coin = member_token::split_coin<LOY>(1500, member, ctx);
+      member_token::receive_coin<LOY>(member, coin, ctx);
+      test_scenario::return_shared<MemberBoard>(board);
+    };
+
+    test_scenario::end(scenario);
+  }
+
+  #[test]
+  #[expected_failure(abort_code=member_token::ERROR_COIN_NOT_EXIST)]
+  public fun test_split_coin_no_coin(){
+    use sui::test_scenario;
+
+    use loychain::loy::{LOY};
+    use loychain::member::{Self, MemberBoard};
+    use loychain::member_token;
+
+    use std::string::{Self, String};
+
+    let owner = @0001;
+    let email: String = string::utf8(b"admin@loychain.org");
+    let nick_name: String = string::utf8(b"Scoth");
+
+    let scenario = test_scenario::begin(owner);
+
+    // setup member_board
+    {
+      let ctx = test_scenario::ctx(&mut scenario);
+      member::init_create_member_board(ctx);
+    };
+
+    // Start creating membership
+    test_scenario::next_tx(&mut scenario, owner);
+    {
+      let board = test_scenario::take_shared<MemberBoard>(&scenario);
+      let ctx = test_scenario::ctx(&mut scenario);
+      let result = member::register_member(nick_name, email, owner, &mut board, ctx);
+
+      // expect registration to be successful
+      assert!(result == true, 0);
+      test_scenario::return_shared<MemberBoard>(board);
+    };
+
+    // Execution call
+    test_scenario::next_tx(&mut scenario, owner);
+
+    // Expect to crash
+    test_scenario::next_tx(&mut scenario, owner);
+    {
+      let board = test_scenario::take_shared(&scenario);
+      let member = member::borrow_mut_member_by_email(&mut board, &email);
+      let ctx = test_scenario::ctx(&mut scenario);
+
+      // this would fail eventually EERROR_COIN_NOT_EXIST
+      let coin = member_token::split_coin<LOY>(1500, member, ctx);
+      member_token::receive_coin<LOY>(member, coin, ctx);
+      test_scenario::return_shared<MemberBoard>(board);
+    };
+  
     test_scenario::end(scenario);
   }
 
