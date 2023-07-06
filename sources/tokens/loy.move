@@ -1,29 +1,12 @@
 module loychain::loy {
-  use sui::tx_context::{Self, TxContext};
-  use sui::coin::{Self,};
-  use sui::transfer;
-  use sui::url::{Url};
-
-  use std::option::{Self, Option};
+  use sui::tx_context::{TxContext};
+  use loychain::token_managable;
 
   struct LOY has drop {}
 
   // Trigger when package is published
   fun init(withness: LOY, ctx: &mut TxContext) {
-    create_coin(withness, ctx);
-  }
-
-  // icon can be updated later with update_icon_url
-  public fun create_coin(withness: LOY, ctx: &mut TxContext){
-    let decimal = 9;
-    let symbol = b"LOY";
-    let name = b"LOY";
-    let description = b"";
-    let icon_url: Option<Url> = option::none();
-    let (treasury_cap, metadata) = coin::create_currency<LOY>(withness, decimal, symbol, name, description, icon_url, ctx);
-
-    transfer::public_freeze_object(metadata);
-    transfer::public_transfer(treasury_cap, tx_context::sender(ctx));
+    token_managable::create_coin<LOY>(withness, ctx);
   }
 
   #[test]
