@@ -161,7 +161,6 @@ module loychain::loy {
     use loychain::loy::{LOY};
     use loychain::util;
     use std::string::{Self, String};
-    use std::option::{Self, Option};
 
     let admin_address = @0x0001;
 
@@ -285,11 +284,10 @@ module loychain::loy {
       let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, partner_address, partner, ctx);
-
-      assert!(option::is_some<NFTCard>(&nft_cardable) == true, 0);
-
-      let nft_card = option::destroy_some<NFTCard>(nft_cardable);
+      // let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, partner_address, partner, ctx);
+      // assert!(option::is_some<NFTCard>(&nft_cardable) == true, 0);
+      // let nft_card = option::destroy_some<NFTCard>(nft_cardable);
+      let nft_card = partner_nft::mint_card(tier_name, type_name, partner_address, partner, ctx);
       let nft_card_id = object::id(&nft_card);
       partner_nft::transfer_card(nft_card, receiver);
 

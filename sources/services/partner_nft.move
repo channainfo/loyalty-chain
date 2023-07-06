@@ -4,7 +4,6 @@ module loychain::partner_nft {
   use sui::event;
 
   use std::string::{String};
-  use std::option::{Self, Option};
   use loychain::partner::{Self, Partner, PartnerBoard};
   use loychain::nft::{Self, NFTCard};
 
@@ -57,14 +56,11 @@ module loychain::partner_nft {
     card_type_name: String,
     partner_address: address,
     partner: &mut Partner,
-    ctx: &mut TxContext): Option<NFTCard>{
+    ctx: &mut TxContext): NFTCard{
 
     let partner_id = object::id(partner);
 
-    // assert!(partner::partner_owner_address(partner) == sender, 0);
-    if(partner::partner_owner_address(partner) != partner_address) {
-      return option::none<NFTCard>()
-    };
+    assert!(partner::partner_owner_address(partner) == partner_address, ERROR_NOT_PARTNER_ADDRESS);
 
     let mut_card_tier = nft::borrow_mut_card_tier_by_name(card_tier_name, partner);
     let card_tier_id = object::id(mut_card_tier);
@@ -73,9 +69,7 @@ module loychain::partner_nft {
     let mut_card_type = nft::borrow_mut_card_type_by_name(card_type_name, mut_card_tier);
     let card_type_id = object::id(mut_card_type);
 
-    if(nft::card_type_current_issued_number(mut_card_type) >= nft::card_type_max_supply(mut_card_type)) {
-      return option::none<NFTCard>()
-    };
+    assert!(nft::card_type_current_issued_number(mut_card_type) < nft::card_type_max_supply(mut_card_type), ERROR_MAX_SUPPLY_REACHED);
 
     let issued_number = nft::card_type_current_issued_number(mut_card_type) + 1;
     let issued_at = tx_context::epoch(ctx);
@@ -109,7 +103,7 @@ module loychain::partner_nft {
 
     event::emit(card_created_event);
 
-    option::some<NFTCard>(nft_card)
+    nft_card
   }
 
   public fun mint_and_transfer_card(
@@ -120,8 +114,7 @@ module loychain::partner_nft {
     partner: &mut Partner,
     ctx: &mut TxContext) {
 
-    let nft_cardable = mint_card(card_tier_name, card_type_name, partner_address, partner, ctx);
-    let nft_card = option::destroy_some<NFTCard>(nft_cardable);
+    let nft_card = mint_card(card_tier_name, card_type_name, partner_address, partner, ctx);
 
     let receive_event = PartnerTransferNFTCardEvent{
       card_id: object::id(&nft_card),
@@ -191,7 +184,7 @@ module loychain::partner_nft {
 
     assert!(partner::partner_owner_address(partner) == partner_address, ERROR_NOT_PARTNER_ADDRESS);
 
-    let nft_cardable: Option<NFTCard> = partner_nft::mint_card(
+    let nft_card = partner_nft::mint_card(
       card_tier_name,
       card_type_name,
       partner_address,
@@ -199,9 +192,6 @@ module loychain::partner_nft {
       ctx
     );
 
-    assert!(option::is_some<NFTCard>(&nft_cardable) == true, ERROR_MAX_SUPPLY_REACHED);
-
-    let nft_card = option::destroy_some<NFTCard>(nft_cardable);
     let nft_card_id = object::id(&nft_card);
     let member: &mut Member = member::borrow_mut_member_by_email(member_board, &member_email);
 

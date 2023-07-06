@@ -6,13 +6,12 @@ module loychain::member_nft_test {
   public fun test_claim_nft_card_ok(){
     use sui::test_scenario;
     use sui::object;
-    use loychain::nft::{Self, NFTCard};
+    use loychain::nft::{Self};
     use loychain::member::{Self, MemberBoard};
     use loychain::member_nft;
     use loychain::partner::{Self, PartnerBoard, Partner};
     use loychain::partner_nft;
     use std::string::{Self, String};
-    use std::option::{Self, Option};
 
     let owner = @0001;
     let email: String = string::utf8(b"admin@loychain.org");
@@ -131,8 +130,7 @@ module loychain::member_nft_test {
       let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
-      let nft_card = option::destroy_some<NFTCard>(nft_cardable);
+      let nft_card = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
       let nft_card_id = object::id(&nft_card);
 
       member_nft::claim_nft_card(member, nft_card, ctx);
@@ -163,14 +161,12 @@ module loychain::member_nft_test {
   public fun test_claim_nft_card_not_owner(){
     use sui::test_scenario;
     use sui::object;
-    use loychain::nft::{Self, NFTCard};
+    use loychain::nft::{Self};
     use loychain::member::{Self, MemberBoard};
     use loychain::member_nft;
     use loychain::partner::{Self, PartnerBoard, Partner};
     use loychain::partner_nft;
     use std::string::{Self, String};
-    use std::option::{Self, Option};
-
     let owner = @0001;
     let email: String = string::utf8(b"admin@loychain.org");
     let nick_name: String = string::utf8(b"Scoth");
@@ -289,8 +285,7 @@ module loychain::member_nft_test {
       let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
-      let nft_card = option::destroy_some<NFTCard>(nft_cardable);
+      let nft_card = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
       let nft_card_id = object::id(&nft_card);
 
       // expect to crash with ERROR_NOT_OWNER
@@ -321,13 +316,12 @@ module loychain::member_nft_test {
   public fun test_take_nft_card(){
     use sui::test_scenario;
     use sui::object;
-    use loychain::nft::{Self, NFTCard};
+    use loychain::nft::{Self};
     use loychain::member::{Self, MemberBoard};
     use loychain::member_nft;
     use loychain::partner::{Self, PartnerBoard, Partner};
     use loychain::partner_nft;
     use std::string::{Self, String};
-    use std::option::{Self, Option};
 
     let owner = @0001;
     let email: String = string::utf8(b"admin@loychain.org");
@@ -446,8 +440,7 @@ module loychain::member_nft_test {
       let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
-      let nft_card = option::destroy_some<NFTCard>(nft_cardable);
+      let nft_card = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
       let nft_card_id = object::id(&nft_card);
 
       member_nft::claim_nft_card(member, nft_card, ctx);
@@ -483,7 +476,6 @@ module loychain::member_nft_test {
     use loychain::partner::{Self, PartnerBoard, Partner};
     use loychain::partner_nft;
     use std::string::{Self, String};
-    use std::option::{Self, Option};
 
     let owner = @0001;
     let email: String = string::utf8(b"admin@loychain.org");
@@ -602,8 +594,7 @@ module loychain::member_nft_test {
       let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
-      let nft_card = option::destroy_some<NFTCard>(nft_cardable);
+      let nft_card = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
       let nft_card_id = object::id(&nft_card);
 
       member_nft::claim_nft_card(member, nft_card, ctx);
@@ -649,7 +640,6 @@ module loychain::member_nft_test {
     use loychain::partner::{Self, PartnerBoard, Partner};
     use loychain::partner_nft;
     use std::string::{Self, String};
-    use std::option::{Self, Option};
 
     let owner = @0001;
     let email: String = string::utf8(b"admin@loychain.org");
@@ -768,8 +758,7 @@ module loychain::member_nft_test {
       let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let nft_cardable: Option<NFTCard> = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
-      let nft_card = option::destroy_some<NFTCard>(nft_cardable);
+      let nft_card = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
       let nft_card_id = object::id(&nft_card);
 
       member_nft::claim_nft_card(member, nft_card, ctx);
