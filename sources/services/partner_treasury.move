@@ -6,7 +6,6 @@ module loychain::partner_treasury {
   use loychain::partner::{Self, Partner, PartnerBoard};
   use loychain::util;
 
-
   public fun receive_treasury_cap<Token>(treasury_cap: TreasuryCap<Token>, partner_code: String, partner_board: &mut PartnerBoard) {
     let token_name = util::get_name_as_string<Token>();
     let partner = partner::borrow_mut_parter_by_code(partner_code, partner_board);

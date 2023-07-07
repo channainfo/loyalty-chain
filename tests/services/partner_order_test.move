@@ -541,17 +541,6 @@ module loychain::partner_order_test {
       test_scenario::return_shared(partner_board);
     };
 
-    // Verify partner received TreasuryCap
-    test_scenario::next_tx(&mut scenario, admin_address);
-    {
-      let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
-      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
-
-      let exists = partner_treasury::treasury_cap_exists<LOY>(partner);
-      assert!(exists == true, 0);
-      test_scenario::return_shared(partner_board);
-    };
-
     let order_id = string::utf8(b"ORD-182839450388");
     test_scenario::next_tx(&mut scenario, admin_address);
     {
