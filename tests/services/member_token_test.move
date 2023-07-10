@@ -153,8 +153,8 @@ module loychain::member_token_test {
       let member = member::borrow_mut_member_by_email(&mut board, &email);
       let ctx = test_scenario::ctx(&mut scenario);
 
-      let coin_loy: Coin<LOY> = member_token::split_coin<LOY>(1500, member, ctx);
-      let coin_sui: Coin<SUI> = member_token::split_coin<SUI>(300, member, ctx);
+      let coin_loy: Coin<LOY> = member_token::split_coin<LOY>(1500, member, owner, ctx);
+      let coin_sui: Coin<SUI> = member_token::split_coin<SUI>(300, member, owner, ctx);
 
       assert!(coin::value(&coin_loy) == 1500, 0);
       assert!(coin::value(&coin_sui) == 300, 0);
@@ -229,7 +229,7 @@ module loychain::member_token_test {
       let ctx = test_scenario::ctx(&mut scenario);
 
       // this would fail eventually ERROR_NOT_OWNER
-      let coin = member_token::split_coin<LOY>(1500, member, ctx);
+      let coin = member_token::split_coin<LOY>(1500, member, ousider,  ctx);
       member_token::receive_coin<LOY>(member, coin, ctx);
       test_scenario::return_shared<MemberBoard>(board);
     };
@@ -283,7 +283,7 @@ module loychain::member_token_test {
       let ctx = test_scenario::ctx(&mut scenario);
 
       // this would fail eventually EERROR_COIN_NOT_EXIST
-      let coin = member_token::split_coin<LOY>(1500, member, ctx);
+      let coin = member_token::split_coin<LOY>(1500, member, owner, ctx);
       member_token::receive_coin<LOY>(member, coin, ctx);
       test_scenario::return_shared<MemberBoard>(board);
     };

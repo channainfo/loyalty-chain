@@ -45,6 +45,7 @@ module loychain::partner_nft {
     card_type_id: ID,
     card_type_name: String,
     issued_number: u64,
+    used_count: u64,
     accumulated_value: u64,
     benefit: u64,
     issued_at: u64,
@@ -145,7 +146,7 @@ module loychain::partner_nft {
     let mut_card_type = nft::borrow_mut_card_type_by_name(card_type_name, mut_card_tier);
 
     let card_id = object::id(&nft_card);
-    let (partner_id, card_tier_id, card_type_id, issued_number, issued_at, accumulated_value, benefit) = nft::burn_nft_card(nft_card, mut_card_type);
+    let (partner_id, card_tier_id, card_type_id, issued_number, issued_at, used_count, accumulated_value, benefit) = nft::burn_nft_card(nft_card, mut_card_type);
 
     let burned_at = tx_context::epoch(ctx);
     let nft_card_burned_event = PartnerBurnNFTCardEvent {
@@ -156,6 +157,7 @@ module loychain::partner_nft {
       card_type_id,
       card_type_name,
       issued_number,
+      used_count,
       accumulated_value,
       benefit,
       issued_at,

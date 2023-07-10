@@ -298,7 +298,7 @@ module loychain::nft_test {
   }
 
   #[test]
-  public fun test_use_card() {
+  public fun test_complete_order() {
     use sui::test_scenario;
 
     use std::string::{Self};
@@ -400,7 +400,7 @@ module loychain::nft_test {
       let ctx = test_scenario::ctx(&mut scenario);
 
       let nft_card = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
-      let card_benefit = nft::use_card(&mut nft_card);
+      let card_benefit = nft::complete_order(&mut nft_card);
 
       assert!(card_benefit == tier_benefit, 0);
 
@@ -416,7 +416,143 @@ module loychain::nft_test {
       assert!(nft::card_issued_number(&nft_card) == 1, 0);
       assert!(nft::card_accumulated_value(&nft_card) == 10, 0);
       assert!(nft::card_benefit(&nft_card) == tier_benefit, 0);
+      assert!(nft::card_used_count(&nft_card) == 1, 0);
 
+      test_scenario::return_to_address<NFTCard>(receiver, nft_card);
+    };
+
+    test_scenario::end(scenario);
+  }
+
+  #[test]
+  public fun test_cancel_order() {
+    use sui::test_scenario;
+
+    use std::string::{Self};
+    use loychain::partner::{Self, PartnerBoard, Partner};
+    use loychain::partner_nft;
+    use loychain::nft::{Self, NFTCard};
+
+    let owner = @0x0001;
+    // Create boards for partner list
+    let scenario = test_scenario::begin(owner);
+    {
+      let ctx = test_scenario::ctx(&mut scenario);
+      partner::init_create_boards(ctx);
+    };
+
+    // Register a partner
+    let name = string::utf8(b"CM Market");
+    let code = string::utf8(b"CMM");
+    let excerpt = string::utf8(b"CM Market: Multi market place");
+    let content = string::utf8(b"Provide wide range of services and ecoms");
+    let logo_url = string::utf8(b"https://cm-market.io/cmm.png");
+    let is_public = false;
+    let token_name = string::utf8(b"CMM");
+    let allow_nft_card = false;
+    test_scenario::next_tx(&mut scenario, owner);
+    {
+      let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
+      let ctx = test_scenario::ctx(&mut scenario);
+
+      let result = partner::register_partner(
+        name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
+      );
+
+      assert!(result == true, 0);
+      test_scenario::return_shared<PartnerBoard>(partner_board);
+    };
+
+    // Register a Card tier
+    let tier_name = string::utf8(b"Bronze");
+    let tier_description = string::utf8(b"Bronze Benefit");
+    let tier_image_url = string::utf8(b"https://loychain.sui/nft/bronze");
+    let tier_benefit = 10;
+    let tier_level = 0u8;
+    let tier_required_value = 0u64;
+
+    test_scenario::next_tx(&mut scenario, owner);
+    {
+      let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
+
+      let ctx = test_scenario::ctx(&mut scenario);
+
+      let result = nft::register_card_tier(
+        tier_name,
+        tier_description,
+        tier_image_url,
+        tier_benefit,
+        tier_level,
+        tier_required_value,
+        owner,
+        partner,
+        ctx
+      );
+
+      assert!(result == true, 0);
+      test_scenario::return_shared<PartnerBoard>(partner_board);
+    };
+
+    // Register Card type
+    let type_name = string::utf8(b"Membership");
+    let type_image_url = string::utf8(b"https://loychain.sui/nft/bronze/membership");
+    let max_supply = 1_000_000u64;
+
+    test_scenario::next_tx(&mut scenario, owner);
+    {
+      let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
+      let ctx = test_scenario::ctx(&mut scenario);
+
+      let result = nft::register_card_type(
+        type_name,
+        tier_name,
+        type_image_url,
+        max_supply,
+        owner,
+        partner,
+        ctx);
+      assert!(result == true, 0);
+
+      test_scenario::return_shared<PartnerBoard>(partner_board);
+    };
+
+    // Mint nft card and transfer to receiver
+    let receiver = @0x0003;
+    test_scenario::next_tx(&mut scenario, owner);
+    {
+      let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
+      let partner :&mut Partner = partner::borrow_mut_parter_by_code(code, &mut partner_board);
+      let ctx = test_scenario::ctx(&mut scenario);
+
+      let nft_card = partner_nft::mint_card(tier_name, type_name, owner, partner, ctx);
+
+      nft::complete_order(&mut nft_card);
+      nft::complete_order(&mut nft_card);
+      nft::complete_order(&mut nft_card);
+
+      partner_nft::transfer_card(nft_card, receiver);
+      test_scenario::return_shared<PartnerBoard>(partner_board);
+    };
+
+    test_scenario::next_tx(&mut scenario, owner);
+    {
+      let nft_card = test_scenario::take_from_address<NFTCard>(&scenario,receiver);
+      nft::cancel_order(&mut nft_card);
+      test_scenario::return_to_address<NFTCard>(receiver, nft_card);
+    };
+
+    // Expect receiver has a nft card with correct card_accumulated_value
+    test_scenario::next_tx(&mut scenario, receiver);
+    {
+      let nft_card = test_scenario::take_from_address<NFTCard>(&scenario,receiver);
+
+      // 3 times of +10 and 1 time of -10
+      assert!(nft::card_accumulated_value(&nft_card) == 20, 0);
+
+      // 4 times, 3 times to complete the order and 1 time to cancel the order.
+      assert!(nft::card_used_count(&nft_card) == 3 + 1, 0);
       test_scenario::return_to_address<NFTCard>(receiver, nft_card);
     };
 

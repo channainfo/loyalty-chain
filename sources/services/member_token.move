@@ -58,8 +58,8 @@ module loychain::member_token {
     event::emit(received_coin_event);
   }
 
-  public fun split_coin<T>(value: u64, member: &mut Member, ctx: &mut TxContext): Coin<T>{
-    assert!(member::member_owner(member) == tx_context::sender(ctx), ERROR_NOT_OWNER);
+  public fun split_coin<T>(value: u64, member: &mut Member, sender: address, ctx: &mut TxContext): Coin<T>{
+    assert!(member::member_owner(member) == sender, ERROR_NOT_OWNER);
     let member_uid = member::borrow_mut_id(member);
 
     let coin_type = util::get_name_as_bytes<T>();
@@ -79,11 +79,12 @@ module loychain::member_token {
     receiver_address: address,
     ctx: &mut TxContext) {
 
-    let split_coin = split_coin<T>(value, member, ctx);
+    let sender = tx_context::sender(ctx);
+    let splitted_coin = split_coin<T>(value, member, sender, ctx);
 
     let member_id = object::id(member);
     let sent_at = tx_context::epoch(ctx);
-    transfer::public_transfer(split_coin, receiver_address);
+    transfer::public_transfer(splitted_coin, receiver_address);
     let coin_type = util::get_name_as_bytes<T>();
 
     let sent_event = MemberSentCoinEvent {
