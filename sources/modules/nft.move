@@ -49,6 +49,7 @@ module loychain::nft {
     card_type_id: ID,
     issued_number: u64,
     issued_at: u64,
+    used_count: u64,
     accumulated_value: u64,
     benefit: u64
   }
@@ -223,20 +224,21 @@ module loychain::nft {
       card_tier_id,
       card_type_id,
       issued_number,
+      used_count: 0u64,
       accumulated_value: 0u64,
       issued_at,
       benefit
     }
   }
 
-  public fun burn_nft_card(nft_card: NFTCard, card_type: &mut NFTCardType): (ID, ID, ID, u64, u64, u64, u64){
+  public fun burn_nft_card(nft_card: NFTCard, card_type: &mut NFTCardType): (ID, ID, ID, u64, u64, u64, u64, u64){
     if(card_type_current_supply(card_type) > 0){
       card_type.current_supply = card_type.current_supply - 1;
     };
 
-    let NFTCard { id, partner_id, card_tier_id, card_type_id, issued_number, issued_at, accumulated_value, benefit } = nft_card;
+    let NFTCard { id, partner_id, card_tier_id, card_type_id, issued_number, issued_at, used_count,  accumulated_value, benefit } = nft_card;
     object::delete(id);
-    (partner_id, card_tier_id, card_type_id, issued_number, issued_at, accumulated_value, benefit)
+    (partner_id, card_tier_id, card_type_id, issued_number, issued_at, used_count, accumulated_value, benefit)
   }
 
   public fun transfer_card(nft_card: NFTCard, receiver: address) {
@@ -249,8 +251,15 @@ module loychain::nft {
     dynamic_object_field::borrow_mut<String, NFTCardTier>(mut_partner_id, card_tier_name)
   }
 
-  public fun use_card(nft_card: &mut NFTCard): u64 {
+  public fun complete_order(nft_card: &mut NFTCard): u64 {
     nft_card.accumulated_value = nft_card.accumulated_value + nft_card.benefit;
+    nft_card.used_count = nft_card.used_count + 1;
+    nft_card.benefit
+  }
+
+  public fun cancel_order(nft_card: &mut NFTCard): u64 {
+    nft_card.accumulated_value = nft_card.accumulated_value - nft_card.benefit;
+    nft_card.used_count = nft_card.used_count + 1;
     nft_card.benefit
   }
 
@@ -308,6 +317,10 @@ module loychain::nft {
   // NFTCard Helper
   public fun card_issued_number(card: &NFTCard): u64 {
     card.issued_number
+  }
+
+  public fun card_used_count(card: &NFTCard): u64 {
+    card.used_count
   }
 
   public fun card_issued_at(card: &NFTCard): u64 {
