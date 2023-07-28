@@ -8,6 +8,9 @@ module loychain::partner {
 
   use std::string::{ String};
 
+  const VISIBILITY_HIDDEN: u64 = 0;
+  const VISIBILITY_VISIBLE: u64 = 1;
+
   struct PartnerBoard has key, store {
     id: UID,
     partners_count: u64,
@@ -23,12 +26,12 @@ module loychain::partner {
     excerpt: String,
     content: String,
     logo_url: String,
-    is_public: bool,
+    visibility: u8,
     token_name: String,
     owner_address: address,
     companies_count: u64,
     created_at: u64,
-    allow_nft_card: bool,
+    allow_nft_card: u8,
   }
 
   struct PartnerCap has key, store{
@@ -60,7 +63,7 @@ module loychain::partner {
     excerpt: String,
     content: String,
     logo_url: String,
-    is_public: bool,
+    visibility: u8,
     members_count: u128,
     owner_address: address,
     partner_id: ID,
@@ -75,7 +78,7 @@ module loychain::partner {
     excerpt: String,
     content: String,
     logo_url: String,
-    is_public: bool,
+    visibility: u8,
     created_at: u64
   }
 
@@ -105,10 +108,10 @@ module loychain::partner {
     excerpt: String,
     content: String,
     logo_url: String,
-    is_public: bool,
+    visibility: u8,
     token_name: String,
     owner_address: address,
-    allow_nft_card: bool,
+    allow_nft_card: u8,
     partner_board: &mut PartnerBoard,
     ctx: &mut TxContext): bool{
 
@@ -127,7 +130,7 @@ module loychain::partner {
       excerpt,
       content,
       logo_url,
-      is_public,
+      visibility,
       token_name,
       owner_address,
       companies_count: 0u64,
@@ -146,7 +149,8 @@ module loychain::partner {
     transfer::public_transfer(partner_cap, owner_address);
 
     partner_board.partners_count = partner_board.partners_count + 1;
-    if(is_public) {
+    let visible = visibility == (VISIBILITY_VISIBLE as u8);
+    if(visible) {
       partner_board.public_partners_count = partner_board.public_partners_count + 1;
     };
 
@@ -181,12 +185,12 @@ module loychain::partner {
       return false
     };
 
-    let (partner_id, is_public, partner_owner_address) = {
+    let (partner_id, visibility, partner_owner_address) = {
       let partner = borrow_mut_parter_by_code(partner_code, partner_board);
       partner.companies_count = partner.companies_count + 1;
       (
         object::id(partner),
-        partner.is_public,
+        partner.visibility,
         partner.owner_address
       )
     };
@@ -203,20 +207,20 @@ module loychain::partner {
       excerpt,
       content,
       logo_url,
-      is_public: is_public,
+      visibility,
       owner_address: partner_address,
       members_count: 064,
       created_at,
       partner_id
     };
-
+    let visible = visibility == (VISIBILITY_VISIBLE as u8);
     company_board.companies_count = company_board.companies_count + 1;
-    if(is_public){
+    if(visible){
       company_board.public_companies_count = company_board.public_companies_count + 1;
     };
 
     partner_board.companies_count = partner_board.companies_count + 1;
-    if(is_public){
+    if(visible){
       partner_board.public_companies_count = partner_board.public_companies_count + 1;
     };
 
@@ -230,7 +234,7 @@ module loychain::partner {
       excerpt,
       content,
       logo_url,
-      is_public: is_public,
+      visibility,
       owner_address: partner_address,
       created_at,
     };
@@ -303,8 +307,8 @@ module loychain::partner {
     partner.logo_url
   }
 
-  public fun partner_is_public(partner: &Partner): bool {
-    partner.is_public
+  public fun partner_visibility(partner: &Partner): u8 {
+    partner.visibility
   }
 
   public fun partner_token_name(partner: &Partner): String {
@@ -318,7 +322,7 @@ module loychain::partner {
     partner.companies_count
   }
 
-  public fun partner_allow_nft_card(partner: &Partner): bool {
+  public fun partner_allow_nft_card(partner: &Partner): u8 {
     partner.allow_nft_card
   }
 
