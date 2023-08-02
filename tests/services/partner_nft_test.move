@@ -25,16 +25,16 @@ module loychain::partner_nft_test {
     let excerpt = string::utf8(b"CM Market: Multi market place");
     let content = string::utf8(b"Provide wide range of services and ecoms");
     let logo_url = string::utf8(b"https://cm-market.io/cmm.png");
-    let is_public = false;
+    let visibility = 1;
     let token_name = string::utf8(b"CMM");
-    let allow_nft_card = false;
+    let allow_nft_card = 1;
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = partner::register_partner(
-        name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
+        name, code, excerpt, content, logo_url,visibility, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
       assert!(result == true, 0);
@@ -145,16 +145,16 @@ module loychain::partner_nft_test {
     let excerpt = string::utf8(b"CM Market: Multi market place");
     let content = string::utf8(b"Provide wide range of services and ecoms");
     let logo_url = string::utf8(b"https://cm-market.io/cmm.png");
-    let is_public = false;
+    let visibility = 1;
     let token_name = string::utf8(b"CMM");
-    let allow_nft_card = false;
+    let allow_nft_card = 1;
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = partner::register_partner(
-        name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
+        name, code, excerpt, content, logo_url,visibility, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
       assert!(result == true, 0);
@@ -258,16 +258,16 @@ module loychain::partner_nft_test {
     let excerpt = string::utf8(b"CM Market: Multi market place");
     let content = string::utf8(b"Provide wide range of services and ecoms");
     let logo_url = string::utf8(b"https://cm-market.io/cmm.png");
-    let is_public = false;
+    let visibility = 1;
     let token_name = string::utf8(b"CMM");
-    let allow_nft_card = false;
+    let allow_nft_card = 1;
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = partner::register_partner(
-        name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
+        name, code, excerpt, content, logo_url,visibility, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
       assert!(result == true, 0);
@@ -370,16 +370,16 @@ module loychain::partner_nft_test {
     let excerpt = string::utf8(b"CM Market: Multi market place");
     let content = string::utf8(b"Provide wide range of services and ecoms");
     let logo_url = string::utf8(b"https://cm-market.io/cmm.png");
-    let is_public = false;
+    let visibility = 1;
     let token_name = string::utf8(b"CMM");
-    let allow_nft_card = false;
+    let allow_nft_card = 1;
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = partner::register_partner(
-        name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
+        name, code, excerpt, content, logo_url,visibility, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
       assert!(result == true, 0);
@@ -551,16 +551,16 @@ module loychain::partner_nft_test {
     let excerpt = string::utf8(b"CM Market: Multi market place");
     let content = string::utf8(b"Provide wide range of services and ecoms");
     let logo_url = string::utf8(b"https://cm-market.io/cmm.png");
-    let is_public = false;
+    let visibility = 1;
     let token_name = string::utf8(b"CMM");
-    let allow_nft_card = false;
+    let allow_nft_card = 1;
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = partner::register_partner(
-        name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
+        name, code, excerpt, content, logo_url,visibility, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
       assert!(result == true, 0);
@@ -705,16 +705,16 @@ module loychain::partner_nft_test {
     let excerpt = string::utf8(b"CM Market: Multi market place");
     let content = string::utf8(b"Provide wide range of services and ecoms");
     let logo_url = string::utf8(b"https://cm-market.io/cmm.png");
-    let is_public = false;
+    let visibility = 1;
     let token_name = string::utf8(b"CMM");
-    let allow_nft_card = false;
+    let allow_nft_card = 1;
     test_scenario::next_tx(&mut scenario, owner);
     {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = partner::register_partner(
-        name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
+        name, code, excerpt, content, logo_url,visibility, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
       assert!(result == true, 0);
@@ -846,9 +846,9 @@ module loychain::partner_nft_test {
     let excerpt = string::utf8(b"CM Market: Multi market place");
     let content = string::utf8(b"Provide wide range of services and ecoms");
     let logo_url = string::utf8(b"https://cm-market.io/cmm.png");
-    let is_public = false;
+    let visibility = 1;
     let token_name = string::utf8(b"CMM");
-    let allow_nft_card = false;
+    let allow_nft_card = 1;
     let partner_address = @0x0002;
     test_scenario::next_tx(&mut scenario, partner_address);
     {
@@ -856,7 +856,7 @@ module loychain::partner_nft_test {
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = partner::register_partner(
-        name, code, excerpt, content, logo_url,is_public, token_name, partner_address, allow_nft_card, &mut partner_board, ctx
+        name, code, excerpt, content, logo_url,visibility, token_name, partner_address, allow_nft_card, &mut partner_board, ctx
       );
 
       assert!(result == true, 0);
@@ -1037,9 +1037,9 @@ module loychain::partner_nft_test {
     let excerpt = string::utf8(b"CM Market: Multi market place");
     let content = string::utf8(b"Provide wide range of services and ecoms");
     let logo_url = string::utf8(b"https://cm-market.io/cmm.png");
-    let is_public = false;
+    let visibility = 1;
     let token_name = string::utf8(b"CMM");
-    let allow_nft_card = false;
+    let allow_nft_card = 1;
     let partner_address = @0x0002;
     test_scenario::next_tx(&mut scenario, partner_address);
     {
@@ -1047,7 +1047,7 @@ module loychain::partner_nft_test {
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = partner::register_partner(
-        name, code, excerpt, content, logo_url,is_public, token_name, partner_address, allow_nft_card, &mut partner_board, ctx
+        name, code, excerpt, content, logo_url,visibility, token_name, partner_address, allow_nft_card, &mut partner_board, ctx
       );
 
       assert!(result == true, 0);

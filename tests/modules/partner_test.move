@@ -53,9 +53,9 @@ module loychain::partner_test {
     let excerpt = string::utf8(b"CM Market: Multi market place");
     let content = string::utf8(b"Provide wide range of services and ecoms");
     let logo_url = string::utf8(b"https://cm-market.io/cmm.png");
-    let is_public = false;
+    let visibility = 0;
     let token_name = string::utf8(b"CMM");
-    let allow_nft_card = false;
+    let allow_nft_card = 1;
 
     let scenario = test_scenario::begin(owner);
     {
@@ -70,7 +70,7 @@ module loychain::partner_test {
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = partner::register_partner(
-        name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
+        name, code, excerpt, content, logo_url,visibility, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
       // Expect a registration is successful
@@ -94,7 +94,7 @@ module loychain::partner_test {
       assert!(partner::partner_excerpt(partner) == excerpt, 0 );
       assert!(partner::partner_content(partner) == content, 0 );
       assert!(partner::partner_logo_url(partner) == logo_url, 0 );
-      assert!(partner::partner_is_public(partner) == is_public, 0 );
+      assert!(partner::partner_visibility(partner) == visibility, 0 );
       assert!(partner::partner_token_name(partner) == token_name, 0 );
       assert!(partner::partner_owner_address(partner) == owner, 0 );
       assert!(partner::partner_companies_count(partner) == 0u64, 0 );
@@ -117,7 +117,7 @@ module loychain::partner_test {
       let ctx = test_scenario::ctx(&mut scenario);
 
       let result = partner::register_partner(
-        name, code, excerpt, content, logo_url,is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx
+        name, code, excerpt, content, logo_url,visibility, token_name, owner, allow_nft_card, &mut partner_board, ctx
       );
 
       // Expect a registration will fail
@@ -143,9 +143,9 @@ module loychain::partner_test {
     let excerpt = string::utf8(b"Ticketing platform for traveller");
     let content = string::utf8(b"The leading ticketing platform");
     let logo_url = string::utf8(b"");
-    let is_public = true;
+    let visibility = 1;
     let token_name = string::utf8(b"CMG");
-    let allow_nft_card = true;
+    let allow_nft_card = 1;
 
     let company_name = string::utf8(b"Resort and Spa");
     let company_code = string::utf8(b"RAS");
@@ -166,7 +166,7 @@ module loychain::partner_test {
       let partner_board = test_scenario::take_shared<PartnerBoard>(&scenario);
       let ctx = test_scenario::ctx(&mut scenario);
       // Already tested
-      partner::register_partner(name, code, excerpt, content, logo_url, is_public, token_name, owner, allow_nft_card, &mut partner_board, ctx);
+      partner::register_partner(name, code, excerpt, content, logo_url, visibility, token_name, owner, allow_nft_card, &mut partner_board, ctx);
       test_scenario::return_shared<PartnerBoard>(partner_board);
     };
 

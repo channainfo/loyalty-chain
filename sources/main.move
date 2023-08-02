@@ -30,10 +30,10 @@ module loychain::main{
     excerpt: String,
     content: String,
     logo_url: String,
-    is_public: bool,
+    visibility: u8,
     token_name: String,
     owner_address: address,
-    allow_nft_card: bool,
+    allow_nft_card: u8,
     partner_board: &mut PartnerBoard,
     ctx: &mut TxContext){
 
@@ -43,7 +43,7 @@ module loychain::main{
       excerpt,
       content,
       logo_url,
-      is_public,
+      visibility,
       token_name,
       owner_address,
       allow_nft_card,
