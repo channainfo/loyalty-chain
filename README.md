@@ -17,6 +17,10 @@ sui --version
 sui 1.5.0-c9b896c0b
 ```
 
+## Interact with the LOY
+
+We've built a client here: <https://github.com/channainfo/loy-client>
+
 ## Objects On-chain
 
 ### Implemented
