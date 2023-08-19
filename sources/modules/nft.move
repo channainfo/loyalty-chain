@@ -76,30 +76,6 @@ module loychain::nft {
     published_at: u64,
   }
 
-  struct NFTCardReceivedEvent has copy, drop {
-    card_id: ID,
-    partner_id: ID,
-    card_tier_id: ID,
-    card_type_id: ID,
-    issued_number: u64,
-    benefit: u64,
-    issued_at: u64,
-  }
-
-  struct NFTCardBurnedEvent has copy, drop {
-    card_id: ID,
-    partner_id: ID,
-    card_tier_id: ID,
-    card_tier_name: String,
-    card_type_id: ID,
-    card_type_name: String,
-    issued_number: u64,
-    accumulated_value: u64,
-    benefit: u64,
-    issued_at: u64,
-    burned_at: u64
-  }
-
   public fun register_card_tier(
     name: String,
     description: String,
