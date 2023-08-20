@@ -8,13 +8,21 @@ Run test
 sui move test
 ```
 
+## Sui upgrade
+
+If the test fails to run, you probably have the outdated sui and require to install the latest sui: <https://docs.sui.io/build/install#install-sui-binaries>.
+
+```sh
+cargo install --locked --git https://github.com/MystenLabs/sui.git --branch devnet sui
+```
+
 ## Sui CLI
 
 Loychain tests and runs on the following sui version
 
 ```sh
 sui --version
-sui 1.5.0-c9b896c0b
+sui 1.8.0-a583613cb
 ```
 
 ## Interact with the LOY
